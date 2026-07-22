@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>MINPAKU QUEST 2.0 ALPHA</title>
+<title>MINPAKU QUEST 2.0.1 iPHONE AUDIO FIX</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--line:#6fd8ff;--accent:#67e1a3;--gold:#f4d86b}
@@ -395,7 +395,7 @@ body{
 }
 
 
-/* ===== MINPAKU QUEST 2.0 ALPHA ===== */
+/* ===== MINPAKU QUEST 2.0.1 iPHONE AUDIO FIX ===== */
 :root{
   --line:#89e8ff;
   --accent:#85efb6;
@@ -507,11 +507,23 @@ h1{
   .dialog{min-height:122px}
 }
 
+
+/* iPhone audio button fix */
+#bgmHeaderBtn,#menuBgm{
+  position:relative;
+  z-index:999;
+  pointer-events:auto!important;
+  touch-action:manipulation;
+  -webkit-user-select:none;
+  user-select:none;
+  cursor:pointer;
+}
+
 </style>
 </head>
 <body>
 <div id="app">
-<header><div><div class="eyebrow">VERSION 2.0 ALPHA</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
+<header><div><div class="eyebrow">VERSION 2.0.1</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
 <div class="mobile-tools"><button id="menuBtn" type="button">メニュー</button><button id="bgmHeaderBtn" type="button">♪ BGM</button><button id="fullscreenBtn" type="button">全画面</button></div>
 <main id="stage">
 <canvas id="game" width="320" height="320"></canvas><div id="nextGuide">◆ 次の相手を案内します</div><div id="directionGuide">目的地</div>
@@ -624,16 +636,16 @@ function bgmTick(){
  const now=audioCtx.currentTime+.025;
  const theme=themes[currentTheme()];
  const idx=bgmStep%theme.melody.length;
- playTone(theme.melody[idx],now,.21,"square",.022);
- if(bgmStep%2===0)playTone(theme.harmony[Math.floor(bgmStep/2)%theme.harmony.length],now,.32,"sine",.011);
- if(bgmStep%4===0)playTone(theme.bass[Math.floor(bgmStep/4)%theme.bass.length],now,.48,"triangle",.026);
+ playTone(theme.melody[idx],now,.21,"square",.055);
+ if(bgmStep%2===0)playTone(theme.harmony[Math.floor(bgmStep/2)%theme.harmony.length],now,.32,"sine",.024);
+ if(bgmStep%4===0)playTone(theme.bass[Math.floor(bgmStep/4)%theme.bass.length],now,.48,"triangle",.045);
  bgmStep++;
 }
 function updateBgmUi(){
  const floating=document.getElementById("bgmHeaderBtn");
  const status=document.getElementById("bgmStatus");
  if(floating){
-  floating.textContent=bgmOn?"♪ BGM ON":"♪ BGM";
+  floating.textContent=bgmOn?"🔊 BGM ON":"♪ BGM";
   floating.classList.toggle("playing",bgmOn);
  }
  if(status)status.textContent=bgmOn?"現在：再生中":"現在：停止中";
@@ -674,8 +686,65 @@ async function toggleBgm(event){
 }
 const floatingBgmBtn=document.getElementById("bgmHeaderBtn");
 const menuBgm=document.getElementById("menuBgm");
-if(floatingBgmBtn)floatingBgmBtn.addEventListener("click",toggleBgm);
-if(menuBgm)menuBgm.addEventListener("click",toggleBgm);
+let lastBgmToggleAt=0;
+
+async function handleBgmPress(event){
+ if(event){
+  event.preventDefault();
+  event.stopPropagation();
+ }
+ const now=Date.now();
+ if(now-lastBgmToggleAt<450)return;
+ lastBgmToggleAt=now;
+
+ // iOS Safari requires AudioContext creation/resume inside the actual touch gesture.
+ try{
+  if(!audioCtx){
+   const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+   if(!AudioContextClass){
+    toast("このブラウザはBGMに対応していません");
+    return;
+   }
+   audioCtx=new AudioContextClass();
+  }
+  if(audioCtx.state!=="running"){
+   await audioCtx.resume();
+  }
+
+  // A very short silent unlock tone helps older iPhone Safari versions.
+  const unlockOsc=audioCtx.createOscillator();
+  const unlockGain=audioCtx.createGain();
+  unlockGain.gain.value=0.00001;
+  unlockOsc.connect(unlockGain);
+  unlockGain.connect(audioCtx.destination);
+  unlockOsc.start();
+  unlockOsc.stop(audioCtx.currentTime+0.02);
+
+  await toggleBgm();
+ }catch(err){
+  console.error("iPhone audio unlock failed",err);
+  toast("消音モードを解除して、もう一度押してください");
+ }
+}
+
+function bindBgmButton(button){
+ if(!button)return;
+ button.addEventListener("touchend",handleBgmPress,{passive:false});
+ button.addEventListener("pointerup",e=>{
+  if(e.pointerType==="touch")return;
+  handleBgmPress(e);
+ });
+ button.addEventListener("click",e=>{
+  // Fallback for browsers without Pointer Events. Ignore synthetic iOS click.
+  if(Date.now()-lastBgmToggleAt<450){
+   e.preventDefault();
+   return;
+  }
+  handleBgmPress(e);
+ });
+}
+bindBgmButton(floatingBgmBtn);
+bindBgmButton(menuBgm);
 updateBgmUi();
 
 const mobileMenu=document.getElementById("mobileMenu");
