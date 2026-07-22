@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>MINPAKU QUEST - COMPLETE STORY BUILD 1.5</title>
+<title>MINPAKU QUEST 2.0 ALPHA</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--line:#6fd8ff;--accent:#67e1a3;--gold:#f4d86b}
@@ -395,110 +395,126 @@ body{
 }
 
 
-/* MINPAKU QUEST 1.5 visual polish */
+/* ===== MINPAKU QUEST 2.0 ALPHA ===== */
 :root{
-  --line:#7de3ff;
-  --accent:#74edb1;
-  --gold:#ffe177;
+  --line:#89e8ff;
+  --accent:#85efb6;
+  --gold:#ffe27a;
+  --ink:#06111c;
+}
+body{
+  background:
+    radial-gradient(circle at 50% -10%,#214c6c 0,#0b2032 34%,#040b12 78%);
+}
+#app{width:min(100%,980px)}
+header{
+  padding:5px 4px 7px;
+  border-bottom:1px solid rgba(137,232,255,.15);
+}
+h1{
+  font-size:23px;
+  text-shadow:0 0 18px rgba(137,232,255,.38);
 }
 #stage{
-  background:
-    radial-gradient(circle at 50% 35%,rgba(98,190,235,.18),transparent 42%),
-    linear-gradient(#0a1d2d,#07111b);
-  box-shadow:
-    0 18px 45px rgba(0,0,0,.48),
-    inset 0 0 35px rgba(69,190,235,.12);
+  border:2px solid #8eeaff;
+  background:#07121c;
+  box-shadow:0 16px 48px rgba(0,0,0,.52),inset 0 0 34px rgba(89,201,235,.08);
 }
 #stage::after{
   content:"";
-  position:absolute;
-  inset:0;
-  z-index:8;
-  pointer-events:none;
-  background:
-    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px);
+  position:absolute;inset:0;z-index:9;pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px);
   background-size:100% 4px;
-  mix-blend-mode:screen;
-  opacity:.25;
 }
-.title-panel{
-  position:relative;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at 50% 0,rgba(116,237,177,.17),transparent 46%),
-    linear-gradient(180deg,rgba(18,42,59,.995),rgba(8,22,34,.995));
-  border-color:#9ceaff;
-  box-shadow:
-    0 18px 50px rgba(0,0,0,.5),
-    inset 0 0 28px rgba(125,227,255,.08);
+.mobile-tools{position:relative;z-index:90}
+.mobile-tools button{
+  border:1px solid #6f96ac;
+  background:linear-gradient(#304d64,#20394e);
+  box-shadow:inset 0 1px rgba(255,255,255,.12),0 4px 12px rgba(0,0,0,.25);
 }
-.title-panel::before,.title-panel::after{
-  content:"";
-  position:absolute;
-  width:110px;height:110px;
-  border:1px solid rgba(255,225,119,.18);
-  transform:rotate(45deg);
+#bgmHeaderBtn.playing{
+  background:linear-gradient(#91f3bf,#5bd592);
+  color:#062015;border-color:#d9ffe9;
 }
-.title-panel::before{left:-75px;top:-70px}
-.title-panel::after{right:-75px;bottom:-70px}
-.title-panel h2{
-  font-size:30px;
-  letter-spacing:.12em;
-  color:#e6fbff;
-  text-shadow:0 0 14px rgba(125,227,255,.5);
-}
-.title-panel p{
-  color:#f2f8fb;
-  letter-spacing:.08em;
-}
-.title-mark{
-  color:#ffe177;
-  filter:drop-shadow(0 0 8px rgba(255,225,119,.45));
-}
-.panel button.primary{
-  box-shadow:0 7px 18px rgba(56,196,135,.24);
-}
-.dialog{
-  backdrop-filter:blur(3px);
-  box-shadow:0 8px 24px rgba(0,0,0,.42);
-}
-#speaker{
-  text-shadow:0 0 8px rgba(127,220,255,.35);
-}
+#floatingBgmBtn{display:none!important}
 #nextGuide{
-  top:24px;
-  max-width:calc(100% - 130px);
-  overflow:hidden;
-  text-overflow:ellipsis;
-  text-align:center;
-  box-shadow:0 3px 14px rgba(0,0,0,.36);
+  left:8px;right:8px;top:27px;
+  transform:none;
+  max-width:none;
+  text-align:left;
+  padding:7px 11px 7px 34px;
+  background:rgba(3,12,20,.94);
+  border:1px solid #ffe27a;
+  box-shadow:0 5px 15px rgba(0,0,0,.4);
+  font-size:11px;
 }
-#floatingBgmBtn{
-  box-shadow:0 5px 17px rgba(0,0,0,.4);
+#nextGuide::before{
+  content:"◆";
+  position:absolute;left:12px;color:#ffe27a;
+  animation:questPulse .9s ease-in-out infinite alternate;
 }
-canvas{
-  filter:saturate(1.14) contrast(1.05) brightness(1.04);
+#directionGuide{
+  position:absolute;z-index:13;top:66px;left:9px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(5,20,31,.93);
+  border:1px solid rgba(137,232,255,.75);
+  color:#d9f8ff;
+  font-size:10px;font-weight:800;
+  pointer-events:none;
+}
+@keyframes questPulse{to{filter:drop-shadow(0 0 7px #ffe27a);transform:scale(1.12)}}
+.dialog{
+  min-height:118px;
+  background:linear-gradient(180deg,rgba(6,18,29,.98),rgba(3,10,17,.985));
+  box-shadow:0 10px 28px rgba(0,0,0,.5),inset 0 0 20px rgba(137,232,255,.04);
+}
+#speaker{font-size:14px}
+.side-panel,.panel{
+  background:linear-gradient(180deg,rgba(18,40,56,.995),rgba(7,20,31,.995));
+  box-shadow:0 18px 50px rgba(0,0,0,.48);
+}
+.title-panel h2{
+  font-size:31px;letter-spacing:.13em;
+  color:#e9fcff;text-shadow:0 0 16px rgba(137,232,255,.45);
+}
+.title-mark{filter:drop-shadow(0 0 9px rgba(255,226,122,.55))}
+#controls{margin-top:12px}
+.dpad button,.actions button{
+  box-shadow:inset 0 0 0 2px rgba(137,175,202,.55),0 5px 12px rgba(0,0,0,.24);
+}
+.actions .primary{
+  background:linear-gradient(135deg,#9af2c3,#65dc9e);
+}
+.manage-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.manage-stat{padding:10px;border:1px solid #547b91;border-radius:9px;background:#091925}
+.manage-stat strong{display:block;color:#ffe27a;font-size:17px}
+.review-stars{color:#ffe27a;letter-spacing:.08em}
+.ending-rank{
+  display:inline-block;padding:7px 14px;margin:7px 0 12px;
+  border:1px solid #ffe27a;border-radius:999px;color:#ffe27a;font-weight:900;
 }
 @media(max-width:700px) and (orientation:portrait){
-  .title-panel h2{font-size:25px}
-  #nextGuide{
-    top:21px;
-    left:6px;
-    right:96px;
-    max-width:none;
-    transform:none;
-    white-space:nowrap;
+  header{min-height:66px}
+  .mobile-tools{
+    position:absolute;top:75px;right:7px;
+    display:grid;grid-template-columns:repeat(3,auto);gap:5px;
   }
+  .mobile-tools button{min-height:38px;padding:0 9px;font-size:11px}
+  #stage{margin-top:52px}
+  #nextGuide{top:27px;right:7px;font-size:10px;padding-top:6px;padding-bottom:6px}
+  #directionGuide{top:63px;font-size:9px}
+  .dialog{min-height:122px}
 }
 
 </style>
 </head>
 <body>
 <div id="app">
-<header><div><div class="eyebrow">COMPLETE STORY BUILD 1.5 POLISHED</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
-<div class="mobile-tools"><button id="menuBtn" type="button">メニュー</button><button id="fullscreenBtn" type="button">全画面</button></div>
+<header><div><div class="eyebrow">VERSION 2.0 ALPHA</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
+<div class="mobile-tools"><button id="menuBtn" type="button">メニュー</button><button id="bgmHeaderBtn" type="button">♪ BGM</button><button id="fullscreenBtn" type="button">全画面</button></div>
 <main id="stage">
-<canvas id="game" width="320" height="320"></canvas><div id="nextGuide">◆ 黄色いダイヤの人に話しかけよう</div><button id="floatingBgmBtn" type="button">♪ BGM再生</button>
+<canvas id="game" width="320" height="320"></canvas><div id="nextGuide">◆ 次の相手を案内します</div><div id="directionGuide">目的地</div>
 <section id="titleScreen" class="overlay"><div class="panel title-panel"><div class="title-mark">⚕</div><h2>MINPAKU QUEST</h2><p>一軒の宿が、町の未来を変える。</p><button id="newGameBtn" class="primary">はじめから</button><button id="continueBtn">つづきから</button><div class="note">最初からエンディングまで遊べる完成ストーリー版</div></div></section>
 <section id="setupScreen" class="overlay hidden"><div class="panel"><h2>主人公を決める</h2><label>名前</label><input id="playerName" maxlength="8" value="リュウ"><label>職業</label><select id="job"><option>サラリーマン</option><option>主婦</option><option>フリーランス</option><option>学生</option></select><button id="startBtn" class="primary">ユリイカ村へ</button></div></section>
 <section id="dialog" class="dialog hidden"><div id="speaker"></div><div id="dialogText"></div><div id="choices"></div><div class="dialog-hint">TALK / タップで進む</div></section>
@@ -507,7 +523,7 @@ canvas{
 <section id="mobileMenu" class="overlay menu-overlay hidden">
       <div class="panel">
         <h2>メニュー</h2>
-        <button id="menuBgm">BGMを再生／停止</button><div id="bgmStatus">現在：停止中</div><button id="menuQuest">クエスト</button>
+        <button id="menuBgm">BGMを再生／停止</button><div id="bgmStatus">現在：停止中</div><button id="menuManage">民泊経営</button><button id="menuQuest">クエスト</button>
         <button id="menuSave">セーブ</button>
         <button id="menuClose" class="primary">ゲームに戻る</button>
       </div>
@@ -518,7 +534,7 @@ canvas{
 </div>
 <script>
 "use strict";
-const TILE=16,MAP_W=32,MAP_H=20,SAVE_KEY="operationHermesCompleteV1";
+const TILE=16,MAP_W=32,MAP_H=20,SAVE_KEY="minpakuQuestV2Alpha",OLD_SAVE_KEY="operationHermesCompleteV1";
 const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");ctx.imageSmoothingEnabled=false;
 const ASSET_DATA={"grass": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAa0lEQVR4nGPMX5n6n4ECwESJZvobICzAxyAswIcixgJjfP3yjYGBgYGBm4cLpwFvP3zCEIMbgE8jPjDEApEmBrAQVoId8HNzU2bAx69fGRgY8Hjh/btPDO/fYcY7OsDpAkEhPlxSKGDgYwEAaz8Rx+/Le4EAAAAASUVORK5CYII=", "road": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAASklEQVR4nGM8vrXlPwMFgIkSzdQ3QFhEmDID3r55S5kB5ACKDWB59fQxZQaISctSZMDAhwHJBqCnFZINQE8rtPcCoeRN0ABCyRsALhoPI40JSpgAAAAASUVORK5CYII=", "water0": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANklEQVR4nGNUypz4n4ECwESJ5sFhAGPYvjsYYXBm9VY42yTUG0MTsjzlLhiNhdFopIYLKDYAABa8FqOl4ROYAAAAAElFTkSuQmCC", "water1": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANUlEQVR4nGNUypz4n4ECwESJ5sFhAGPYvjv/z6zeChcwCfXGUIRPnnIXjMbCaDRSwwUUGwAA/H8YS8CxmXgAAAAASUVORK5CYII=", "tree": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAUCAYAAACEYr13AAAAeElEQVR4nGNgoBAw4pKIWub3H11sWdQmDPVMVHeBVZ3tfwYGBgYFDUEMxQ9uvGc41nQYRQ/FLhh4A1hgDJVIPYxQxwZg6u4sv8SIYgA6eHDjPVEuGPgwoF4gwsCr2x/p6wLq5wVkEGcpB08bi44/wqp24L0w8AYAALsgGjEQ+JunAAAAAElFTkSuQmCC", "flower": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMElEQVR4nGNgGAW0Bf8fRP+nWDNVDMEHmPBJak2/zaBZbobXELwGEANGDaCCARQDANcDEGSnxgrsAAAAAElFTkSuQmCC", "lamp": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANklEQVR4nGNgoBAwogt8fdT+H58GbrlKFD1MlLpg1AAqGIAXaJna/9cytccbrQPvhVEDqGAAADpmB1bwygPFAAAAAElFTkSuQmCC", "bench": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVR4nGNgGAUDDxhhjHwPrf+kaJy44xojAwMDAxOlLhhkBtx48Z3hxovvOBUTkmdwN1D8726giDMwsckPsjAYEAAAI2AVSGvtsC4AAAAASUVORK5CYII=", "house": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAXklEQVR4nGNgoDWo8jT7j0+eiRjN+AzBaQC6JlyGYDUAl2Js4ozEaMQG2rafYkRxASmakdUzkqMZGcC9cGpxDkmGmMVOQfUCuYAFn2Rc1zEU/qIyKww1FLtg1AAGBgA4vR7Md8HgCQAAAABJRU5ErkJggg==", "guest": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZElEQVR4nGNgoCV4f3D2//cHZ//Hp4YJn2ZsbKIMwKYBlyE4XUAswGqAoH0qIzFiDAwMDBiC6VOu4Q20mTlaKHpo44VRA0gDLOgCB2fGwNn26UswxAgagAxgca6ha0RaXiAFAAB3eSC05TdMLAAAAABJRU5ErkJggg==", "property": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABACAYAAADCmvPmAAAA/ElEQVR4nO3asU3DQBiAUTtioIjCG1CwAU02oI/EBumzAQ07sEEKlI1CRZ04KCQfea9ycbZ+6dM1dx4GALhP49vzdLj2EJxvce0B+B0B4wSMEzBOwDgB4wSMEzBOwLjx52H3/upEJmRabcdhsAPzBIwTME7AOAHjBIwTMO5h7gvLp8eja/afX2cN4/vz2YFxAsYJGCdgnIBxAsYJGCdgnIBxbuSj3Mj/EwLGCRgnYJyAcQLGCRgnYJyAcQLGCRgnYJyAcbP/C71lL5vdyWs/1tMFJ/k7dmCcgHECxgkYJ2CcgHECxgkYJ2CcgHECxgkYJ2CcgHECxgkYJ2DcN5lnGXJJ6w2YAAAAAElFTkSuQmCC", "bank": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABACAYAAADCmvPmAAACWklEQVR4nO3bz0sUcRzG8Wdm1mpD2Lzspd2oKBJPXUpZWAPxtLAg3SLoVrQE/Th4DJQOXQIJD94V/4JgITTFZPFo2KENRSqtxEOiBHrZ1UOwuqPYTjoNz8fndXKGneUzvPc7q1/QgVG/Pz/Z9p9rvvbaiWKWMJm7oYPC+VkK6UY9wHFqJF6Q1zEw80n0R5kufUFp5itc18HZeBPu3rmOlnPxumssrMTY7aevjHwal2o/fSqv4sPcT/Q+y8LzXLwdm8fI6CweP8rUXWHh3k08QocLS3XHY+8WkM+1wvP+3N6tzktoOuWhWt0+9DpGsagHCMOPlQ2kzidqx2dOx1C43x7hROExGbBa2V1p4xMLmPu4gvWNLfQ/745wqnCYeIT6JZPNWP6+DgDo7rqChw/a8WttM+KpwmEyYDZzEW+KZVQqVQDA1PtFuPS/bx7MRMB7Q+m645s30kinEnjxchIDgyUkEnG43v5b9V/HyOR3oOMAPfk29OTbaucyHRcinCg8JlYgEHw1WVh9gKGAQONRrMQD9myllaf76Hcl9kol1/adW15tiWCScLRm+xzA6HcgYCvWYUw9Qk8iBSSngOQUkJwCklNAcoH/jLh89e9bUovz3/5pGL1/cFqB5BSQnAKSU0ByCkhOAckpIDkFJKeA5ALvxBznLoLe/+i0AskpIDkFJKeA5BSQnAKSU0ByCkhOAckpIDkFJKeA5BSQnKl/L8sVig2/tjiUC3GS/0crkJwCklNAcgpITgHJKSA5BSSngOQUkJwCklNAcgpITgHJKSA5BSSngOQUkNwOt2CEKmwMk1wAAAAASUVORK5CYII=", "fire": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABACAYAAADS1n9/AAABW0lEQVR4nO3cMWrCUByA8RfJGRy9gIMBXeskVASn7r1Cl04eoFOXnqWLglO7VoiDF3DsJXSToIPVVF943/ebBMPjIV/+ERPMQuLKh/6u7hrF9yr7j700UR57AzH1vn4Or9fDQcSdxNOKvQHFhZoA1TP+3HuUiZBPnp5rXyMb7XdTe4mUPyMvAXCoS8DxWPdLoBMADzUBjlHP+qrkA5i1u7G30GheAuAMAM4A4AwA7nCX63O+TPbXLp2ajkdZCE4APAOAMwA4A4AzADgDgDMAuItvBj0W27PHLMrOVZtx/fuv7wSAMwA4A4AzADgDgDMAOAOAMwA4A4DziSAonwhSCMEA8AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOAMAC75P4mqenmd/fnYj/e3G+6kOZwAcAYAZwBwBgBnAHAGAGcAcAYAZwBwBgBnAHAGAGcAcAYAZwBwBgBnAHB7OOAyPx4bHrAAAAAASUVORK5CYII=", "tavern": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABACAYAAADCmvPmAAAA+klEQVR4nO3asW3CQBiAURtlDhZgBwYAKRWL0IQZkiaLUCElA7EIVNSJiQL5wnuVi7P1S5+uufMwAMBjGrfLxeneQ3C92b0H4GcEjBMwTsA4AeMEjBMwTsA4AePGy8N+t3EiE7J53Y/DYAfmCRgnYJyAcQLGCRgnYNzT1Beet6sv1xzeP68axvenswPjBIwTME7AOAHjBIwTME7AOAHj3MhHuZH/JwSMEzBOwDgB4wSMEzBOwDgB4wSMEzBOwDgB4yb/F/qXvXwcv732bT3/xUluxw6MEzBOwDgB4wSMEzBOwDgB4wSMEzBOwDgB4wSMEzBOwDgB4wSMOwPXyRlTVHQIWwAAAABJRU5ErkJggg==", "guild": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABQCAYAAADRAH3kAAAC/0lEQVR4nO3dS0hUUQDG8e9651E2pZVQLhRKEloFtjByERkSaC4CW0iLEiqKbCNBBgYKriIXoWGEtAuKXBVGD7IXQVG0yAgy2vSSccY0Hzna3DstBkanB/mYh3O/77fy4uWcM/rnnDs4oIEM1f/8eCTda/hdcekFI91rmK+sdC9A0ksBkHNUAL3PJnDmfADN7QGc7RrCt+9W7HuHmwbi7p19/a+vZ6s7/RWtnUG0dgbR0hHA4xc/Erz69HCVVJ5ccmfp3EzGXfX1T+HlmxCa6/NgmgZuPhjDpWvDaDySl5DZXKaBpmPRsaamI2i7PASvx0DpluWxezLxZ+mYHaDn4Rhqdq+EaUafwyq2++BxG7DtxM/l9Rio3ZOD20/GEz94irnSvYBE+ewPoyDfHbte5jXQULc2afMV5rvgHwonbfxUcUwAtj2z+956NI5Xb0MYGbVw7tS6pMxn2YCZlXHv+v7gmCNgfZ4LnwZ+AgAqd/jQcHANgsMzD4GGgdhxYNlA1iJf+YeP03E7TqZyTADl21ag+84YLCu6E9x9OhH3S95Y4EZffwgA8PpdCEWFngXPNTFp42rPKKp3+ha15qXAMUdAWUk2vvjDaGwbxOpVJsq2Zsdt0Qf25qLr+ghu9EYf3A7ty/3rOGErgpaOQOy6eIMHtVU5CFsRtHYGAQCWFUF1uQ+bi7zJe0EpYmTiWxdJHMccAbIwCoBc7JDs6divo4BIVf0VA9AOQE8BkFMA5BQAOQVATgGQUwDk5v23gIqaXf+95173/QUtRuOnfnztAOQUADkFQE4BkFMA5BQAOQVATgGQUwDk9IkgUvpEkABQAPQUADkFQE4BkFMA5BQAOQVATgGQUwDkFAA5BUBOAZBTAOQUADkFQE4BkFMA5BQAOQVATgGQUwDkFAA5BUBOAZBTAOQUADkFQE4BkHPM/wyaixMX38/53vajm5K4kqVDOwA5BUBOAZBTAOQUADkFQE4BkFMA5BQAOQVATgGQUwDkFAA5BUBOAZBTAOQUALlfXqqvcB6cbX0AAAAASUVORK5CYII=", "health": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABACAYAAADCmvPmAAABL0lEQVR4nO3boQ3CQBhA4R7pBBgsikUwTUCwAoNgYA9YAYGoYREUFsMKh0PAJZRCad7xPtlcyDUv94trCEWmYozx8VkIIfSxly4N+t6APmNAuCxGSmpcNkUfq+VsvW398jmgv78jFM6AcAaEK/vewDfMN7unZ4fVstE6Ok8gnAHhshihKTmOyxRPIJwB4e7XSKfLFX0j8W8mo2EoCk8gngHhDAhnQDgDwhkQzoBwb1+ljeP+5ZpzWLTYir/fhicQzoBwBoQzIJwB4QwIZ0A4A8IZEM4v8lB+kc+EAeEMCGdAOAPCGRDOgHAGhDMgnAHhDAhnQDgDwmX1F+tqWjVeWx/rDnfyO55AOAPCGRDOgHAGhDMgnAHhDAhnQDgDwhkQzoBwBoQzIJwB4QwIZ0C4G4WXKjc0yiSuAAAAAElFTkSuQmCC", "mayor": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAAAwCAYAAADJuP4nAAADz0lEQVR4nO2aXWxTVRzAf/f2bqU4tHNrt64bC3Ftp5mZYSAqxGmoL8w3DA/OJzVGX5TF8ODHo/FNH/yI0cSPFzQ+iDxoM40ORAVsRURC1xacrHRD15KuA9amH/f6UGjWjAXXwW5PPL+n9pzT//nf+7v/c++5qYIAxA+9YZg19/oHX1TMmvu/oJqdgGRlSIGCo5mdQK28+vKH3HlXN8NP+Cttn382xsmTf/Ha609V2kLBCPu//ImXXhmmqcnGzD9p9u79nt0jO1GU8ur49lv72LXrIc4lkhz5+RQWi0qppPPAtr5KnMfv880DQUAB1gEjnx6N/rA6R7s02h5/v2n3l5WgaRZSyVl03UBVFQwDLlyYQ9MsVePGw5Ns3dZHJBJn0yYfzrZm2tub+ePEBP333EFkPE5Ly61k5uYJBaM8/cyj2GyNZLN5Pvl4lOcfvtuwWlTOX87humXNIEBBN0jn8gf3+PtNOfaFCL2EdrhbSSSSAJyfTtHuaqnqLxSK5PNFNt/bSyQcr7Rv9w8wNnYcwzA4cOB3/P4BDh08wdDQFmy2RgBstkZ2DG3hYr64aN4GVaFUJ5e90AK93i5i0XMAxGIJvL7Oqv5YNIHX14XDYSedvkippAPgdNpxuW5n3xc/Yrc34WxrZmYmTYe7ter3bncrRX2xqVxJx2qpj1NXH1nUiMfbyZnTUwD8eWYaT4+7qj986izHfzvNu+/sZ25unomJ6Urfdv9Gfg1F8T+yccn4hmEs+AypbJ5kNk86V+A2a308PtRHFjWydq0VRVXIzF4CwLqmsdKn6wbJVIYXRnYC5QqNjMfxeMpV6nDYsVobcDjsADjbmpmaStHd3VaJMT2VQlPLDzqKAq1XltdL+SLzhRLrGs0/fUJXIIDX18U3oyF6PNXVN3n2b1wL7okbNrQTiyWWjDM42E/g61/I5fIAZLN5AoHgNSVZNZXCNZZWMzD/Elohvb3r+XY0yO6Rx6raw+FJeno6Kt8bGrTyNmJmFqfTviiOx9tJJnOZD97/Cu3qNmJrH4cDRxeN1VSVgl644cdSC4qo2whJGeGX0P87UqDgVN60H/noObmUCsT9T76ngKxA4ZECBUcKFBwpUHCkQMGRAgVHChScZb8LHdix+bpjjgVCNSUj4y8fWYGCIwUKjhQoOFKg4EiBgiMFCo4UKDjC/ydmIcNvHrv+oCtjIt89e5OzWR1kBQrOsivwRr5FMCP+zZ5ntfK/iqxAwZECBUcKFBwpUHCkQMGRAgVHChQcKVBwpEDBkQIFRwoUHClQcKRAwZECBUcKFJx/ATtgJ76agRNOAAAAAElFTkSuQmCC", "player": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAk0lEQVR4nGNgGGDAiC4Qba7xH5+GpSdvYOihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4QD/+fdxJiJ8cuTqZ8GmMPGBGyF78AJS9A++KBh1AL0BRiK8NTkKzlbLXUYVS5DNJOgAZLAxUZGRgYGBQdPIkmD2w2bZ9XPHCepHj4IALHxsYrgAyfoHPA0AACZ8LjY72seFAAAAAElFTkSuQmCC", "mayor_char": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAoElEQVR4nGNkgIJcN+3/DCSAybuuMiLzydXPRIomWoABdwAjukCpvxneoOzeeApDDyX6sRr2bv9MrIYIOabjtZwc/QMeBRgOODHJF2cQ4pMjVz8LNoW3Lm8hZA9eQIr+wRcFow6gN8BIhIkL3sDZ8xNEqGIJspkEHYAMLPI2MzIwMDBoGlkSXdEgW3b93HGC+tGjIAALH5sYLkCy/gFPAwC58DfFitd/nAAAAABJRU5ErkJggg==", "admin": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAA80lEQVR4nGNkQAL/////z0AEYGRkZMQmTo5+JmI00BLAHUCs63GpJVc/C7KEsLAwUQa8ffsWqzg5+lmwSb4/MIuBgYGBQSW4koGBgYHhztp2BgYGBgZBhzSClpCqHyUxCQkJERWM7969w5oIydEPZ8jrWsE1n58Uj1WjYd5COPvh5WMojiBXPyMDAwPDw4cP4ZrtfCLxuj5e7iOc3bT1KsX6B082HHXAQAGMcoCLFZGTvv3GmttIBshmEnQAqQbgU0uMB/BGwcPLxwIfXj4WSLTtZOhnYWBgYJCXl4c5NUDTyHI9Pg1NW68GMjAwbEAWo0Q/AM4Ic1vzLHU9AAAAAElFTkSuQmCC", "rina": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAkklEQVR4nGNgGGDAiC6QZav1H5+GaYevYeihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YBHXZtxJiJ8cuTqZ8Gm8MtpKUL24AWk6B98UTDqAHoDjETovqINzt4ZUUUVS5DNJOgAZCBX5svIwMDAoGlkSTD7YbPs+rnjBPWjR0EAFj42MVyAZP0DngYAul4vLMMVJa8AAAAASUVORK5CYII=", "ken": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAoUlEQVR4nGNkQAL/r3j/ZyACMOpsZcQmTo5+JmI00BIMuAMwgtJKSxVvMB67dhtr8JOrH6th7/bPxGqIkGM6XsvJ0T/gUYDhgJc+rjiDEJ8cufpZsCn83buGkD14ASn6B18UjDqA3gAjETo8+wJnH5DioYolyGYSdAAyEN+ym5GBgYFB08iSqEoG3bLr544T1I8eBQFY+NjEcAGS9Q94GgAA4Ck3PmU09ggAAAAASUVORK5CYII=", "sara": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAjUlEQVR4nGNgGGDAiC4Q7mj6H5+GlftPY+ihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YB3X77iTET45MjVjxEkhCwR4uHGGw2k6h98UTDqAHoDFnQBazsXOPvooT1UsQTZTIIOQAawFKtpZEkw+2Gz7Pq54wT1o0dBABY+NjFcgGT9A54GABElNC+3f7xkAAAAAElFTkSuQmCC", "emma": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAkklEQVR4nGNgGGDAiC6QaqXzH5+G2ceuYOihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YDsQ104ExE+OXL1s2BTWMv8kZA9eAEp+gdfFIw6gN4AIxHuK1gPZztNCKSKJchmEnQAMphqV8bIwMDAoGlkSTD7YbPs+rnjBPWjR0EAFj42MVyAZP0DngYAI70t9EL40t0AAAAASUVORK5CYII=", "mori": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAkklEQVR4nGNgGGDAiC6gqqr6H5+G27dvY+ihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YBrB6twJiJ8cuTqZ8Gm8AXTQ0L24AWk6B98UTDqAHoDjEQYXLgfzl7b70gVS5DNJOgAZKBl38bIwMDAoGlkSTD7YbPs+rnjBPWjR0EAFj42MVyAZP0DngYAVpIvAhXo82AAAAAASUVORK5CYII=", "child": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAkklEQVR4nGNgGGDAiC4Q76D3H5+GhQcuYeihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YBPiy/gTET45MjVz4JNIcsTc0L24AWk6B98UTDqAHoDjERo3p8JZ58snE4VS5DNJOgAZMAXa8DIwMDAoGlkSTD7YbPs+rnjBPWjR0EAFj42MVyAZP0DngYAge0t/m++vTQAAAAASUVORK5CYII=", "cleaner": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAkklEQVR4nGNgGGDAiC5gY6L/H5+GI2cuYuihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YCiHf9xJiJ8cuTqZ8GmsOVnGiF78AJS9A++KBh1AL0BRiLcXmUFZ3u2HaOKJchmEnQAMujzYGRkYGBg0DSyJJj9sFl2/dxxgvrRoyAACx+bGC5Asv4BTwMAl0UvSvPtIGEAAAAASUVORK5CYII="},assets={};let ready=false,assetLoaded=0;
 function makeFallbackAsset(name){
@@ -555,33 +571,40 @@ const npcs=[
 {id:"child",name:"ミナ",x:11,y:7,asset:"child"},{id:"cleaner",name:"清掃スタッフ",x:21,y:15,asset:"cleaner"}
 ];
 
-let state={started:false,name:"リュウ",job:"サラリーマン",money:0,knowledge:0,trust:0,village:5,review:0,chapter:0,step:0,player:{x:16,y:8,dir:"down"},dialogOpen:false,dialogQueue:[],choiceMode:false,walkFrame:0,property:null,license:null,ending:false};
+let state={started:false,name:"リュウ",job:"サラリーマン",money:0,knowledge:0,trust:0,village:5,review:0,bookings:0,cleanliness:70,neighbors:70,chapter:0,step:0,player:{x:16,y:8,dir:"down"},dialogOpen:false,dialogQueue:[],choiceMode:false,walkFrame:0,property:null,license:null,ending:false,endingRank:null};
 const roads=new Set(),water=new Set();
 for(let y=0;y<19;y++)roads.add(`16,${y}`);for(let x=2;x<30;x++){roads.add(`${x},7`);roads.add(`${x},15`);}for(let y=7;y<=15;y++){roads.add(`6,${y}`);roads.add(`26,${y}`);}
 for(let x=14;x<=18;x++){roads.add(`${x},18`);roads.add(`${x},19`);}for(let x=0;x<MAP_W;x++)water.add(`${x},19`);for(let x=14;x<=18;x++)water.delete(`${x},19`);
 const trees=[[1,1],[2,2],[9,1],[10,1],[21,1],[30,2],[1,6],[30,6],[1,11],[30,11],[1,16],[30,16],[9,18],[22,18]],flowers=[[11,6],[12,6],[20,6],[21,6],[10,14],[11,14],[20,14],[21,14],[4,8],[28,8]],benches=[[12,8],[20,8],[12,14],[20,14]],lamps=[[10,7],[22,7],[10,15],[22,15]];
 
-function resetState(){state={started:false,name:"リュウ",job:"サラリーマン",money:0,knowledge:0,trust:0,village:5,review:0,chapter:0,step:0,player:{x:16,y:8,dir:"down"},dialogOpen:false,dialogQueue:[],choiceMode:false,walkFrame:0,property:null,license:null,ending:false};}
-function updateStats(){stats.innerHTML=`${state.name}／${state.job}<br>${state.money.toLocaleString()}G　知識 ${state.knowledge}　信頼 ${state.trust}<br>村の活気 ${state.village}　評価 ${state.review?state.review.toFixed(1):"-"}`;}
+function resetState(){state={started:false,name:"リュウ",job:"サラリーマン",money:0,knowledge:0,trust:0,village:5,review:0,bookings:0,cleanliness:70,neighbors:70,chapter:0,step:0,player:{x:16,y:8,dir:"down"},dialogOpen:false,dialogQueue:[],choiceMode:false,walkFrame:0,property:null,license:null,ending:false,endingRank:null};}
+function updateStats(){stats.innerHTML=`${state.name}／${state.job}<br>${state.money.toLocaleString()}G　知識 ${state.knowledge}　信頼 ${state.trust}<br>村の活気 ${state.village}　評価 ${state.review?state.review.toFixed(1):"-"}　予約 ${state.bookings||0}`;}
 function toast(t){toastBox.textContent=t;toastBox.classList.remove("hidden");clearTimeout(toast.timer);toast.timer=setTimeout(()=>toastBox.classList.add("hidden"),1800);}
 const toastBox=document.getElementById("toast");
 function saveGame(show=true){localStorage.setItem(SAVE_KEY,JSON.stringify({...state,dialogOpen:false,dialogQueue:[],choiceMode:false}));if(show)toast("セーブしました");}
-function loadGame(){const raw=localStorage.getItem(SAVE_KEY);if(!raw)return false;try{Object.assign(state,JSON.parse(raw));state.started=true;titleScreen.classList.add("hidden");setupScreen.classList.add("hidden");
+function loadGame(){const raw=localStorage.getItem(SAVE_KEY)||localStorage.getItem(OLD_SAVE_KEY);if(!raw)return false;try{Object.assign(state,JSON.parse(raw));state.started=true;titleScreen.classList.add("hidden");setupScreen.classList.add("hidden");
 
 
 // Original retro fantasy RPG-style BGM (Web Audio)
 let bgmOn=false,bgmTimer=null,audioCtx=null,bgmStep=0;
-const melody=[
-  261.63,329.63,392.00,523.25,493.88,392.00,329.63,392.00,
-  293.66,349.23,440.00,587.33,523.25,440.00,349.23,440.00,
-  329.63,392.00,493.88,659.25,587.33,493.88,392.00,329.63,
-  293.66,349.23,392.00,523.25,493.88,392.00,329.63,261.63
-];
-const harmony=[
-  196.00,196.00,220.00,220.00,246.94,246.94,220.00,196.00,
-  174.61,174.61,196.00,196.00,220.00,220.00,196.00,174.61
-];
-const bass=[130.81,130.81,146.83,146.83,164.81,164.81,146.83,130.81];
+const themes={
+ town:{
+  melody:[261.63,329.63,392,523.25,493.88,392,329.63,392,293.66,349.23,440,587.33,523.25,440,349.23,440],
+  harmony:[196,220,246.94,220,174.61,196,220,196],
+  bass:[130.81,146.83,164.81,146.83]
+ },
+ event:{
+  melody:[220,261.63,329.63,392,369.99,329.63,293.66,246.94,220,246.94,293.66,349.23,329.63,293.66,261.63,220],
+  harmony:[164.81,174.61,196,174.61,146.83,164.81,174.61,164.81],
+  bass:[110,123.47,130.81,123.47]
+ },
+ ending:{
+  melody:[261.63,329.63,392,523.25,659.25,587.33,523.25,493.88,392,440,493.88,587.33,523.25,392,329.63,261.63],
+  harmony:[196,246.94,261.63,246.94,220,246.94,261.63,196],
+  bass:[130.81,164.81,174.61,130.81]
+ }
+};
+function currentTheme(){return state.ending?"ending":(state.chapter===5||state.chapter===6?"event":"town");}
 
 function playTone(freq,start,dur,type="square",gain=.025){
  const osc=audioCtx.createOscillator();
@@ -599,17 +622,18 @@ function playTone(freq,start,dur,type="square",gain=.025){
 function bgmTick(){
  if(!bgmOn||!audioCtx)return;
  const now=audioCtx.currentTime+.025;
- const idx=bgmStep%melody.length;
- playTone(melody[idx],now,.21,"square",.024);
- if(bgmStep%2===0)playTone(harmony[Math.floor(bgmStep/2)%harmony.length],now,.32,"sine",.012);
- if(bgmStep%4===0)playTone(bass[Math.floor(bgmStep/4)%bass.length],now,.48,"triangle",.03);
+ const theme=themes[currentTheme()];
+ const idx=bgmStep%theme.melody.length;
+ playTone(theme.melody[idx],now,.21,"square",.022);
+ if(bgmStep%2===0)playTone(theme.harmony[Math.floor(bgmStep/2)%theme.harmony.length],now,.32,"sine",.011);
+ if(bgmStep%4===0)playTone(theme.bass[Math.floor(bgmStep/4)%theme.bass.length],now,.48,"triangle",.026);
  bgmStep++;
 }
 function updateBgmUi(){
- const floating=document.getElementById("floatingBgmBtn");
+ const floating=document.getElementById("bgmHeaderBtn");
  const status=document.getElementById("bgmStatus");
  if(floating){
-  floating.textContent=bgmOn?"♪ BGM ON":"♪ BGM再生";
+  floating.textContent=bgmOn?"♪ BGM ON":"♪ BGM";
   floating.classList.toggle("playing",bgmOn);
  }
  if(status)status.textContent=bgmOn?"現在：再生中":"現在：停止中";
@@ -648,22 +672,21 @@ async function toggleBgm(event){
   toast("もう一度BGMボタンを押してください");
  }
 }
-const floatingBgmBtn=document.getElementById("floatingBgmBtn");
+const floatingBgmBtn=document.getElementById("bgmHeaderBtn");
 const menuBgm=document.getElementById("menuBgm");
-if(floatingBgmBtn){
- floatingBgmBtn.addEventListener("click",toggleBgm,{passive:false});
- floatingBgmBtn.addEventListener("touchend",toggleBgm,{passive:false});
-}
+if(floatingBgmBtn)floatingBgmBtn.addEventListener("click",toggleBgm);
 if(menuBgm)menuBgm.addEventListener("click",toggleBgm);
 updateBgmUi();
 
 const mobileMenu=document.getElementById("mobileMenu");
 const menuBtn=document.getElementById("menuBtn");
 const menuQuest=document.getElementById("menuQuest");
+const menuManage=document.getElementById("menuManage");
 const menuSave=document.getElementById("menuSave");
 const menuClose=document.getElementById("menuClose");
 menuBtn.onclick=()=>mobileMenu.classList.remove("hidden");
 menuClose.onclick=()=>mobileMenu.classList.add("hidden");
+menuManage.onclick=()=>{mobileMenu.classList.add("hidden");openManagement();};
 menuQuest.onclick=()=>{
  mobileMenu.classList.add("hidden");
  renderQuest();
@@ -703,7 +726,7 @@ document.addEventListener("contextmenu",e=>{
 });
 let lastTouchEnd=0;
 document.addEventListener("touchend",e=>{
- if(e.target.closest("#floatingBgmBtn,#menuBgm"))return;
+ if(e.target.closest("#bgmHeaderBtn,#menuBgm"))return;
  const now=Date.now();
  if(now-lastTouchEnd<=300)e.preventDefault();
  lastTouchEnd=now;
@@ -719,6 +742,40 @@ function showEvent(title,html){
  eventPanel.scrollTop=0;
  eventContent.scrollTop=0;
 }
+
+function openManagement(){
+ const rev=state.review?state.review.toFixed(1):"-";
+ const stars=state.review?("★".repeat(Math.max(1,Math.round(state.review)))+"☆".repeat(Math.max(0,5-Math.round(state.review)))):"☆☆☆☆☆";
+ showEvent("民泊経営",`
+  <div class="manage-grid">
+   <div class="manage-stat">所持金<strong>${state.money.toLocaleString()}G</strong></div>
+   <div class="manage-stat">予約数<strong>${state.bookings||0}件</strong></div>
+   <div class="manage-stat">清掃品質<strong>${state.cleanliness||70}</strong></div>
+   <div class="manage-stat">近隣関係<strong>${state.neighbors||70}</strong></div>
+  </div>
+  <div class="card"><strong>レビュー</strong><div class="review-stars">${stars}</div>${rev}</div>
+  <p class="question-help">運営方針を一つ選べます。費用と効果を見ながら判断してください。</p>
+  <button onclick="managementAction('clean')">清掃を強化する（10,000G）</button>
+  <button onclick="managementAction('guide')">案内を改善する（5,000G）</button>
+  <button onclick="managementAction('neighbor')">近隣へ挨拶する（3,000G）</button>
+  <button class="primary" onclick="closeEvent()">戻る</button>`);
+}
+window.managementAction=function(kind){
+ let msg="";
+ if(kind==="clean"){
+  if(state.money<10000){toast("資金が足りません");return;}
+  state.money-=10000;state.cleanliness=Math.min(100,(state.cleanliness||70)+15);
+  state.review=Math.min(5,(state.review||4)+.15);msg="清掃品質とレビューが上がりました";
+ }else if(kind==="guide"){
+  if(state.money<5000){toast("資金が足りません");return;}
+  state.money-=5000;state.bookings=(state.bookings||0)+2;state.trust+=1;msg="予約と信頼が増えました";
+ }else{
+  if(state.money<3000){toast("資金が足りません");return;}
+  state.money-=3000;state.neighbors=Math.min(100,(state.neighbors||70)+18);state.trust+=1;msg="近隣関係が改善しました";
+ }
+ saveGame(false);updateStats();toast(msg);openManagement();
+};
+
 function closeEvent(){eventPanel.classList.add("hidden");eventContent.innerHTML="";updateStats();saveGame(false);}
 function nextStep(){state.step++;const max=chapters[state.chapter].steps.length;if(state.step>=max){state.chapter++;state.step=0;toast(state.chapter<chapters.length?chapters[state.chapter].title:"クリア！");}updateStats();saveGame(false);}
 function currentTarget(){const c=state.chapter,s=state.step;if(c===0)return ["mayor","mayor","admin","rina","ken","sara","admin"][s];if(c===1)return "rina";if(c===2)return "ken";if(c===3)return "sara";if(c===4)return "emma";if(c===5)return ["emma","admin","cleaner"][s];if(c===6)return "admin";if(c===7)return ["mayor","admin"][s];return null;}
@@ -859,19 +916,19 @@ function openingEvent(){
 window.openStyle=function(style){
  let title="",body="",klass="";
  if(style==="local"){
-  state.review=4.8;state.trust+=3;state.village+=8;state.money+=60000;
+  state.review=4.8;state.trust+=3;state.village+=8;state.money+=60000;state.bookings+=6;state.cleanliness=88;
   title="地域全体が宿の魅力になった！";
   body=`<p class="impact good">＋ ゲストから高評価の口コミ</p>
         <p class="impact good">＋ 売上 60,000G</p>
         <p class="impact good">＋ 地元飲食店にも客が流れ、村の活気が8上昇</p>`;
  }else if(style==="family"){
-  state.review=4.5;state.trust+=2;state.village+=5;state.money+=50000;
+  state.review=4.5;state.trust+=2;state.village+=5;state.money+=50000;state.bookings+=5;state.cleanliness=84;
   title="家族旅行の予約が増えた！";
   body=`<p class="impact good">＋ 安定した口コミ評価</p>
         <p class="impact good">＋ 売上 50,000G</p>
         <p class="impact good">＋ 村の活気が5上昇</p>`;
  }else{
-  state.review=3.2;state.trust-=2;state.village+=1;state.money+=70000;klass="bad";
+  state.review=3.2;state.trust-=2;state.village+=1;state.money+=70000;state.bookings+=7;state.cleanliness=58;klass="bad";
   title="定員は増えたが、悪い口コミが続いた";
   body=`<p class="impact good">＋ 短期売上 70,000G</p>
         <p class="impact bad">－ 「狭くて落ち着かない」と低評価</p>
@@ -913,7 +970,7 @@ function goodTrouble(clean=false){
  </div><button class="primary" onclick="closeEvent()">次へ進む</button>`;
 }
 function badTrouble(){
- state.trust-=2;
+ state.trust-=2;state.neighbors=Math.max(0,(state.neighbors||70)-18);
  state.review=Math.max(2,(state.review||4)-0.5);
  state.money=Math.max(0,state.money-20000);
  nextStep();
@@ -961,16 +1018,48 @@ window.chooseLicense=function(v){
 
 function ending(){
  state.ending=true;
- eventPanel.scrollTop=0;state.village=Math.max(state.village,45);state.money+=120000;state.review=Math.max(state.review,4.2);
+ eventPanel.scrollTop=0;
+ const score=(state.review||0)*10+state.trust*2+state.knowledge+state.village+(state.neighbors||0)/5+(state.cleanliness||0)/5;
+ let rank,title,story,bonus;
+ if(score>=125){
+  rank="Sランク：村を変えた伝説の宿";
+  title="ユリイカ村、黄金時代へ";
+  story="宿を中心に新しい店と仕事が生まれ、村は旅人が憧れる目的地になった。";
+  bonus=150000;
+ }else if(score>=100){
+  rank="Aランク：愛される人気宿";
+  title="村に笑顔が戻った";
+  story="丁寧な運営と地域との連携が実り、宿は村の新しい顔になった。";
+  bonus=100000;
+ }else if(score>=75){
+  rank="Bランク：堅実な宿";
+  title="小さな明かりは消えない";
+  story="派手ではないが、無理のない運営で宿と村の暮らしを守り続けた。";
+  bonus=60000;
+ }else{
+  rank="Cランク：再建への第一歩";
+  title="物語は、まだ途中";
+  story="課題は残った。それでも失敗から学び、再び宿を立て直す道を選んだ。";
+  bonus=20000;
+ }
+ state.endingRank=rank;
+ state.money+=bonus;
+ state.review=Math.max(state.review||0,3.5);
  showEvent("MINPAKU QUEST - END",`<div class="ending">
- <h2>ユリイカ村は蘇った</h2>
- <p>宿の明かりが灯り、旅人が村を歩き、<br>飲食店に笑い声が戻った。</p>
- <p>空き家は宿になり、仕事が生まれ、<br>子どもたちの声が村に響いた。</p>
- <p>橋の向こうへ、白髪の旅人が歩いていく。</p>
+ <div class="ending-rank">${rank}</div>
+ <h2>${title}</h2>
+ <p>${story}</p>
+ <p>橋の向こうへ、白髪の旅の行政書士が歩いていく。</p>
  <p><strong>「まだ宿のない町がある。」</strong></p>
- <hr><p>最終評価：${state.review.toFixed(1)} ★<br>村の活気：${state.village}<br>信頼：${state.trust}<br>知識：${state.knowledge}</p>
+ <hr>
+ <p>最終評価：${state.review.toFixed(1)} ★<br>
+ 予約：${state.bookings||0}件／清掃品質：${state.cleanliness||0}<br>
+ 近隣関係：${state.neighbors||0}／村の活気：${state.village}<br>
+ 信頼：${state.trust}／知識：${state.knowledge}</p>
+ <button onclick="saveGame(true)">エンディングをセーブ</button>
  <button class="primary" onclick="restartGame()">もう一度遊ぶ</button></div>`);
  saveGame(false);
+ if(bgmOn){bgmStep=0;}
 }
 window.restartGame=function(){localStorage.removeItem(SAVE_KEY);location.reload();};
 
@@ -1015,6 +1104,9 @@ function draw(){
   ctx.drawImage(assets.grass,x*TILE,y*TILE);
   if(roads.has(`${x},${y}`))ctx.drawImage(assets.road,x*TILE,y*TILE);
   if(water.has(`${x},${y}`))ctx.drawImage(assets[Math.floor(Date.now()/500)%2?"water1":"water0"],x*TILE,y*TILE);
+  if(!roads.has(`${x},${y}`)&&!water.has(`${x},${y}`)&&((x*13+y*7)%17===0)){
+   ctx.fillStyle="rgba(205,241,143,.32)";ctx.fillRect(x*TILE+3,y*TILE+5,2,1);ctx.fillRect(x*TILE+10,y*TILE+11,1,2);
+  }
  }
  drawVillageChanges();
  drawPlaza();
@@ -1023,53 +1115,60 @@ function draw(){
  lamps.forEach(([x,y])=>ctx.drawImage(assets.lamp,x*TILE,y*TILE));
  trees.forEach(([x,y])=>ctx.drawImage(assets.tree,x*TILE,y*TILE-4));
  buildings.forEach(b=>{
+  ctx.save();
+  ctx.shadowColor="rgba(0,0,0,.28)";ctx.shadowBlur=5;ctx.shadowOffsetY=3;
   ctx.drawImage(assets[b.kind],b.x*TILE,b.y*TILE);
+  ctx.restore();
  });
- buildings.forEach(b=>{
-  label(b.name,(b.x+b.w/2)*TILE,b.y*TILE-2);
- });
+ buildings.forEach(b=>label(b.name,(b.x+b.w/2)*TILE,(b.y+1)*TILE));
  npcs.forEach(drawNpc);
  drawPlayer();
  ctx.restore();
  drawTopBar();
  requestAnimationFrame(draw);
 }
-function drawVillageChanges(){ctx.drawImage(assets.house,14*TILE,18*TILE);if(state.chapter>=4){for(const [x,y] of [[3,8],[29,8],[8,16]])ctx.drawImage(assets.guest,x*TILE,y*TILE);}if(state.chapter>=7){for(const [x,y] of [[5,1],[27,1],[2,17],[29,17]])ctx.drawImage(assets.flower,x*TILE,y*TILE);}}
-function drawPlaza(){ctx.fillStyle="#d0c291";ctx.fillRect(13*TILE,7*TILE,7*TILE,8*TILE);ctx.fillStyle="#b5a879";ctx.fillRect(16*TILE-10,10*TILE-10,20,20);ctx.fillStyle="#347ca0";ctx.fillRect(16*TILE-6,10*TILE-5,12,10);ctx.fillStyle="#77d4e7";ctx.fillRect(16*TILE-2,10*TILE-13,4,10);}
-function drawNpc(n){
- const img=assets[n.asset],sx=(Math.floor(Date.now()/450)%2)*16;
- ctx.fillStyle="rgba(0,0,0,.22)";
- ctx.beginPath();ctx.ellipse(n.x*TILE+8,n.y*TILE+15,6,2,0,0,Math.PI*2);ctx.fill();
- ctx.drawImage(img,sx,0,16,16,n.x*TILE,n.y*TILE,16,16);
- if(n.id===currentTarget()){
-  const bob=Math.floor(Date.now()/300)%2;
-  const cx=n.x*TILE+8,cy=n.y*TILE-13-bob;
-  ctx.save();
-  ctx.shadowColor="rgba(255,229,111,.9)";ctx.shadowBlur=7;
-  ctx.fillStyle="#ffe56f";ctx.strokeStyle="#5b430d";ctx.lineWidth=1;
-  ctx.beginPath();
-  ctx.moveTo(cx,cy-6);ctx.lineTo(cx+6,cy);ctx.lineTo(cx,cy+6);ctx.lineTo(cx-6,cy);
-  ctx.closePath();ctx.fill();ctx.stroke();
-  ctx.restore();
- }
+function drawVillageChanges(){
+ // stone bridge and river bank detail
+ ctx.fillStyle="#6f8790";ctx.fillRect(14*TILE,18*TILE,5*TILE,TILE);
+ for(let x=14;x<=18;x++){ctx.fillStyle=x%2?"#aebdc0":"#92a6aa";ctx.fillRect(x*TILE,18*TILE,TILE,TILE);}
+ ctx.strokeStyle="rgba(30,48,55,.55)";ctx.lineWidth=1;
+ for(let x=14;x<=19;x++)ctx.beginPath(),ctx.moveTo(x*TILE,18*TILE),ctx.lineTo(x*TILE,19*TILE),ctx.stroke();
+ if(state.chapter>=4){for(const [x,y] of [[3,8],[29,8],[8,16]])ctx.drawImage(assets.guest,x*TILE,y*TILE);}
+ if(state.chapter>=7){for(const [x,y] of [[5,1],[27,1],[2,17],[29,17]])ctx.drawImage(assets.flower,x*TILE,y*TILE);}
 }
-function drawPlayer(){ctx.drawImage(assets.player,state.walkFrame*16,0,16,16,state.player.x*TILE,state.player.y*TILE,16,16);}
-function label(t,x,y){
- ctx.save();
- ctx.font="bold 8px sans-serif";
- const w=ctx.measureText(t).width+12,h=13;
- const px=Math.round(x-w/2),py=Math.max(19,Math.round(y-h));
- ctx.fillStyle="rgba(5,15,24,.94)";
- ctx.strokeStyle="rgba(125,227,255,.78)";
- ctx.lineWidth=1;
+function drawPlaza(){
+ ctx.fillStyle="#d6c68e";ctx.fillRect(13*TILE,7*TILE,7*TILE,8*TILE);
+ ctx.fillStyle="#8d7c58";ctx.fillRect(15*TILE,9*TILE,3*TILE,3*TILE);
+ ctx.fillStyle="#b9d7df";ctx.fillRect(15*TILE+5,9*TILE+4,38,38);
+ ctx.fillStyle="#2d87ad";ctx.fillRect(15*TILE+10,9*TILE+9,28,28);
+ ctx.fillStyle="#8fe2ef";ctx.fillRect(16*TILE-2,9*TILE-5,4,17);
+ ctx.fillStyle="rgba(255,255,255,.55)";ctx.fillRect(16*TILE,9*TILE-7,2,13);
+}
+function drawNpc(n){const img=assets[n.asset],sx=(Math.floor(Date.now()/450)%2)*16;ctx.drawImage(img,sx,0,16,16,n.x*TILE,n.y*TILE,16,16);if(n.id===currentTarget()){
+ const bob=Math.floor(Date.now()/300)%2;
+ ctx.fillStyle="#ffe56f";ctx.strokeStyle="#4b3610";ctx.lineWidth=1;
  ctx.beginPath();
- if(ctx.roundRect)ctx.roundRect(px,py,w,h,4);else ctx.rect(px,py,w,h);
- ctx.fill();ctx.stroke();
- ctx.fillStyle="#fff";
- ctx.textAlign="center";
- ctx.textBaseline="middle";
- ctx.fillText(t,x,py+h/2+.5);
- ctx.restore();
+ ctx.moveTo(n.x*TILE+8,n.y*TILE-11-bob);
+ ctx.lineTo(n.x*TILE+14,n.y*TILE-5-bob);
+ ctx.lineTo(n.x*TILE+8,n.y*TILE+1-bob);
+ ctx.lineTo(n.x*TILE+2,n.y*TILE-5-bob);
+ ctx.closePath();ctx.fill();ctx.stroke();
+ ctx.fillStyle="rgba(4,11,18,.9)";
+ ctx.fillRect(n.x*TILE-2,n.y*TILE-20-bob,20,7);
+ ctx.fillStyle="#ffe56f";ctx.font="bold 6px sans-serif";ctx.textAlign="center";
+ ctx.fillText("NEXT",n.x*TILE+8,n.y*TILE-14-bob);ctx.textAlign="left";
+}}
+function drawPlayer(){
+ ctx.fillStyle="rgba(0,0,0,.25)";ctx.beginPath();ctx.ellipse(state.player.x*TILE+8,state.player.y*TILE+15,6,2,0,0,Math.PI*2);ctx.fill();
+ ctx.drawImage(assets.player,state.walkFrame*16,0,16,16,state.player.x*TILE,state.player.y*TILE,16,16);
+}
+function label(t,x,y){
+ ctx.save();ctx.font="bold 7px sans-serif";
+ const w=Math.min(72,ctx.measureText(t).width+12),h=13;
+ const px=Math.round(x-w/2),py=Math.round(y);
+ ctx.fillStyle="rgba(5,15,24,.94)";ctx.strokeStyle="rgba(137,232,255,.82)";ctx.lineWidth=1;
+ ctx.beginPath();if(ctx.roundRect)ctx.roundRect(px,py,w,h,4);else ctx.rect(px,py,w,h);ctx.fill();ctx.stroke();
+ ctx.fillStyle="#fff";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(t,x,py+h/2+.5);ctx.restore();
 }
 function drawTopBar(){
  const w=canvas.width;
@@ -1088,12 +1187,17 @@ function drawTopBar(){
 
 
 function updateGuide(){
- const targetId=currentTarget();
- const target=npcs.find(n=>n.id===targetId);
- const guide=document.getElementById("nextGuide");
+ const targetId=currentTarget(),target=npcs.find(n=>n.id===targetId);
+ const guide=document.getElementById("nextGuide"),dirGuide=document.getElementById("directionGuide");
  if(!guide)return;
- if(state.ending){guide.textContent="物語は完結しました";return;}
- guide.textContent=target?`◆ NEXTの印がある「${target.name}」に話しかけよう`:"◆ クエストを確認しよう";
+ if(state.ending){guide.textContent="物語は完結しました";if(dirGuide)dirGuide.textContent="END";return;}
+ if(!target){guide.textContent="クエスト画面を確認しよう";if(dirGuide)dirGuide.textContent="目的地なし";return;}
+ const dx=target.x-state.player.x,dy=target.y-state.player.y;
+ const dist=Math.abs(dx)+Math.abs(dy);
+ const dirs=[];
+ if(dy<0)dirs.push("上");if(dy>0)dirs.push("下");if(dx<0)dirs.push("左");if(dx>0)dirs.push("右");
+ guide.textContent=`次は「${target.name}」に話しかけよう`;
+ if(dirGuide)dirGuide.textContent=`${dirs.join("・")||"すぐ近く"}／あと約${dist}マス`;
 }
 
 function renderQuest(){
@@ -1109,7 +1213,7 @@ startBtn.onclick=()=>{
  state.started=true;
  setupScreen.classList.add("hidden");
  updateStats();
- toast("右上の「♪ BGM」で音楽を再生できます");
+ toast("黄色いダイヤと左上の案内を目印に進もう");
  talkTo("mayor");
 };
 talkBtn.onclick=talk;saveBtn.onclick=()=>saveGame(true);questBtn.onclick=()=>{renderQuest();questPanel.classList.remove("hidden");};closeQuest.onclick=()=>questPanel.classList.add("hidden");dialog.onclick=()=>{if(!state.choiceMode)showNextDialog();};
