@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>MINPAKU QUEST 2.8.1 DIALOG CLOSE FIX</title>
+<title>MINPAKU QUEST 2.8 STABLE REBUILD</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--line:#6fd8ff;--accent:#67e1a3;--gold:#f4d86b}
@@ -1147,7 +1147,7 @@ html,body,button,input,select{
 }
 
 /* Prevent speaker-name overlap */
-#dialog.dialog:not(.hidden){
+#dialog.dialog{
   display:block !important;
   grid-template-columns:unset !important;
   gap:0 !important;
@@ -1218,14 +1218,6 @@ html,body,button,input,select{
 @media(max-width:430px){
   #speaker{font-size:13px !important;margin-bottom:8px !important}
   #dialogText{font-size:13px !important;line-height:1.52 !important}
-}
-
-
-/* Dialogue close safeguard */
-#dialog.hidden{
-  display:none !important;
-  visibility:hidden !important;
-  pointer-events:none !important;
 }
 
 </style>
