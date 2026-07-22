@@ -1,301 +1,1122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>OPERATION HERMES v1.6</title>
+<title>MINPAKU QUEST - COMPLETE STORY BUILD 1.5</title>
 <style>
-:root{
-  --bg:#081522;--panel:#12263a;--line:#8bd9ff;--text:#f7fbff;--accent:#58e39b;
-  --warn:#ffd166;--bad:#ff7272;--blue:#70b7ff;
-}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:linear-gradient(#081522,#0e2235);color:var(--text);
-font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow:hidden}
-#app{max-width:480px;height:100%;margin:auto;padding:8px;display:flex;flex-direction:column;gap:7px}
-header{display:flex;justify-content:space-between;align-items:center;min-height:40px}
-h1{font-size:18px;margin:0;color:#bdeaff;letter-spacing:.5px}
-#stats{font-size:11px;line-height:1.45;text-align:right}
-#missionbar{background:#10283d;border:1px solid #3c6784;border-radius:8px;padding:7px 9px;font-size:12px}
-#missionbar b{color:var(--warn)}
-#gamebox{position:relative;flex:1;min-height:0;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:#193b56}
+:root{--line:#6fd8ff;--accent:#67e1a3;--gold:#f4d86b}
+html,body{margin:0;min-height:100%;background:radial-gradient(circle at top,#18334a,#07111b 65%);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+body{display:flex;justify-content:center}button,input,select{font:inherit}button{cursor:pointer}
+#app{width:min(100%,920px);padding:10px}header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:8px}
+h1{font-size:20px;margin:0;color:#d3f6ff;letter-spacing:.06em}.eyebrow{font-size:10px;color:#7ca3b8;letter-spacing:.14em}.tagline{font-size:11px;color:#d8e6ec}
+#stats{font:11px/1.5 ui-monospace,monospace;text-align:right;color:var(--gold)}
+#stage{position:relative;width:100%;aspect-ratio:8/5;border:2px solid var(--line);border-radius:14px;overflow:hidden;background:#000;box-shadow:0 12px 38px rgba(0,0,0,.38)}
 canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
-#dialog,#panel,#start,#ending{
-  position:absolute;inset:0;display:none;z-index:10;background:rgba(3,10,18,.82);
-  align-items:center;justify-content:center;padding:14px
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,11,18,.93);z-index:20}.hidden{display:none!important}
+.panel{width:min(90%,440px);padding:20px;background:rgba(14,29,42,.99);border:2px solid var(--line);border-radius:14px}.title-panel{text-align:center}
+.title-panel h2{font-size:27px;margin:4px 0;color:#d0f5ff}.title-panel p{font-size:13px;color:#dceaf0}.title-mark{font-size:32px;color:var(--gold)}
+.panel label{display:block;margin-top:10px;font-size:12px;color:#b8cbd5;text-align:left}.panel input:not([type="checkbox"]),.panel select{width:100%;height:42px;margin-top:5px;border:1px solid #607f92;background:#091722;color:#fff;border-radius:8px;padding:0 10px}.panel input[type="checkbox"]{width:18px;height:18px;margin:0 8px 0 0;vertical-align:middle;accent-color:#67e1a3}.panel label.option{display:flex;align-items:center;gap:6px;padding:8px 0;margin-top:2px;color:#dceaf0}
+.panel button{width:100%;min-height:42px;margin-top:9px;border:0;border-radius:8px;background:#30485d;color:#fff;font-weight:800}.panel button.primary,.actions .primary{background:var(--accent);color:#042013}
+.note{font-size:10px;color:#91a8b6;margin-top:10px}.dialog{position:absolute;left:12px;right:12px;bottom:12px;z-index:15;padding:12px;border:2px solid #fff;border-radius:10px;background:rgba(4,10,17,.97);min-height:108px}
+#speaker{font-weight:900;color:#7fdcff;margin-bottom:6px}#dialogText{font-size:13px;line-height:1.6;white-space:pre-wrap}.dialog-hint{text-align:right;color:#8096a3;font-size:9px;margin-top:5px}
+#choices{display:flex;gap:7px;flex-direction:column;margin-top:9px}#choices button{min-height:35px;border:1px solid #5f8196;background:#172c3b;color:#fff;border-radius:7px;text-align:left;padding:7px 10px}
+.side-panel{position:absolute;right:12px;top:28px;width:min(350px,90%);z-index:18;background:rgba(8,18,27,.98);border:2px solid var(--line);border-radius:12px;padding:14px;max-height:85%;overflow:auto}
+.side-panel h3{margin:0 0 10px;color:#d6f6ff}.quest-row{padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:12px}.quest-done{color:#83dfa8}.quest-current{color:var(--gold);font-weight:700}
+.side-panel button{width:100%;height:36px;margin-top:10px;border:0;border-radius:7px}.toast{position:absolute;top:28px;left:50%;transform:translateX(-50%);z-index:19;background:rgba(6,15,23,.95);border:1px solid #fff;border-radius:7px;padding:7px 11px;font-size:11px;white-space:nowrap}
+#controls{display:grid;grid-template-columns:190px 1fr;gap:16px;margin-top:10px;align-items:center}.dpad{position:relative;height:160px}.dpad button{position:absolute;width:58px;height:58px;border:0;border-radius:12px;background:#263e53;color:#fff;font-size:22px;box-shadow:inset 0 0 0 2px #4e718a}
+[data-dir=up]{left:66px;top:0}[data-dir=left]{left:0;top:58px}[data-dir=down]{left:66px;top:58px}[data-dir=right]{left:132px;top:58px}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.actions button{height:48px;border:0;border-radius:24px;background:#324c62;color:#fff;font-weight:900}
+.meter{height:10px;background:#132431;border-radius:5px;overflow:hidden;margin:5px 0 10px}.meter>div{height:100%;background:#67e1a3}
+.card{border:1px solid #5f8196;border-radius:8px;padding:10px;margin:8px 0;background:#0a1822}.card strong{color:#f4d86b}.ending{text-align:center;line-height:1.8}
+@media(max-width:620px){#app{padding:6px}header{align-items:center}h1{font-size:15px}.tagline{font-size:9px}#stats{font-size:9px}#controls{grid-template-columns:190px 1fr;gap:4px}.actions{grid-template-columns:1fr}.actions button{height:38px}}
+
+/* Smartphone optimization */
+html,body{
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden;
+  overscroll-behavior:none;
+  touch-action:manipulation;
 }
-.card{width:100%;max-height:92%;overflow:auto;background:var(--panel);border:2px solid var(--line);
-border-radius:12px;padding:15px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.name{color:#9ee4ff;font-weight:bold;margin-bottom:8px}
-.text{font-size:14px;line-height:1.65;white-space:pre-line}
-.hint{text-align:right;color:#aebdca;font-size:11px;margin-top:8px}
-.choices{display:grid;gap:8px;margin-top:12px}
-button{font-family:inherit}
-.choice,.big{
-  border:0;border-radius:9px;background:#2d5f80;color:#fff;padding:12px;font-size:14px;font-weight:bold;width:100%
+body{
+  min-height:100dvh;
 }
-.choice.good{background:#287a59}.choice.bad{background:#7e3e46}
-.big{background:var(--accent);color:#082015;font-size:16px}
-.smallbtn{border:1px solid #54718a;background:#1a3348;color:#fff;border-radius:8px;padding:8px 10px}
-#controls{height:132px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-#dpad{position:relative;height:126px}
-.ctrl{position:absolute;width:48px;height:48px;border:0;border-radius:10px;background:#29445d;color:#fff;font-size:21px;
-box-shadow:inset 0 0 0 2px #54718a}
-#up{left:48px;top:0}#left{left:0;top:48px}#down{left:48px;top:48px}#right{left:96px;top:48px}
-#actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:center}
-.action{height:48px;border:0;border-radius:24px;font-weight:bold}
-#talk{background:var(--accent);color:#082015}#menu{background:#405f7d;color:#fff}
-#bgm{background:#8a6a3c;color:#fff}#reset{background:#5e435f;color:#fff}
-.badge{display:inline-block;padding:2px 6px;border-radius:999px;font-size:11px;background:#2f526d;margin-left:5px}
-.result{padding:10px;border-radius:8px;margin-top:10px;background:#18324a}
-.result.good{border-left:4px solid var(--accent)}.result.bad{border-left:4px solid var(--bad)}
-.marker{color:var(--warn)}
-@media(max-height:700px){#controls{height:112px}.ctrl{width:42px;height:42px}#up{left:42px}#left{top:42px}#down{left:42px;top:42px}#right{left:84px;top:42px}}
+#app{
+  width:min(100%,920px);
+  padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right))
+          max(8px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));
+}
+#stage{
+  max-height:calc(100dvh - 220px);
+}
+.mobile-tools{
+  display:flex;
+  justify-content:flex-end;
+  gap:6px;
+  margin-bottom:6px;
+}
+.mobile-tools button{
+  border:1px solid #55758c;
+  background:#263e53;
+  color:#fff;
+  border-radius:8px;
+  min-height:34px;
+  padding:0 12px;
+  font-size:12px;
+  font-weight:700;
+}
+.dpad button,.actions button{
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:none;
+}
+#dialogText{
+  overflow-wrap:anywhere;
+}
+@media (max-width:700px){
+  #app{padding:4px}
+  header{margin-bottom:4px}
+  .eyebrow{font-size:8px}
+  h1{font-size:14px}
+  .tagline{display:none}
+  #stats{font-size:8px;line-height:1.35}
+  #stage{
+    width:100%;
+    max-height:none;
+    aspect-ratio:8/5;
+    border-radius:9px;
+  }
+  .dialog{
+    left:5px;
+    right:5px;
+    bottom:5px;
+    min-height:88px;
+    padding:9px;
+  }
+  #speaker{font-size:12px;margin-bottom:3px}
+  #dialogText{font-size:12px;line-height:1.45}
+  .dialog-hint{font-size:8px}
+  #choices{gap:5px;margin-top:6px}
+  #choices button{min-height:40px;font-size:12px;padding:7px 8px}
+  .panel{padding:14px;width:min(94%,440px);max-height:92dvh;overflow:auto}
+  .side-panel{top:5px;right:5px;width:calc(100% - 10px);max-height:92%}
+  #controls{
+    grid-template-columns:150px 1fr;
+    gap:7px;
+    margin-top:5px;
+    align-items:center;
+  }
+  .dpad{height:126px}
+  .dpad button{
+    width:48px;height:48px;border-radius:10px;font-size:19px;
+  }
+  [data-dir=up]{left:51px;top:0}
+  [data-dir=left]{left:0;top:43px}
+  [data-dir=down]{left:51px;top:43px}
+  [data-dir=right]{left:102px;top:43px}
+  .actions{grid-template-columns:1fr;gap:5px}
+  .actions button{height:38px;border-radius:10px;font-size:12px}
+}
+@media (max-width:430px) and (orientation:portrait){
+  #controls{grid-template-columns:145px 1fr}
+  .dpad{height:122px}
+  .dpad button{width:46px;height:46px}
+  [data-dir=up]{left:49px}
+  [data-dir=left]{top:41px}
+  [data-dir=down]{left:49px;top:41px}
+  [data-dir=right]{left:98px;top:41px}
+  .actions button{height:36px}
+}
+@media (orientation:landscape) and (max-height:600px){
+  body{align-items:flex-start}
+  #app{width:min(100%,1100px)}
+  header{display:none}
+  .mobile-tools{
+    position:fixed;
+    right:6px;
+    top:6px;
+    z-index:50;
+  }
+  #stage{
+    width:min(calc(100vw - 210px),820px);
+    max-height:96dvh;
+    aspect-ratio:8/5;
+  }
+  #controls{
+    position:fixed;
+    inset:0;
+    margin:0;
+    display:block;
+    pointer-events:none;
+    z-index:40;
+  }
+  .dpad{
+    position:absolute;
+    left:max(6px,env(safe-area-inset-left));
+    bottom:max(6px,env(safe-area-inset-bottom));
+    width:150px;height:126px;
+    pointer-events:auto;
+  }
+  .actions{
+    position:absolute;
+    right:max(6px,env(safe-area-inset-right));
+    bottom:max(6px,env(safe-area-inset-bottom));
+    width:150px;
+    display:grid;
+    grid-template-columns:1fr;
+    pointer-events:auto;
+  }
+  .actions button{height:38px;background:rgba(50,76,98,.92)}
+  .actions .primary{background:rgba(103,225,163,.94)}
+}
+
+
+/* Portrait RPG layout */
+@media (max-width:700px) and (orientation:portrait){
+  header{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:start;
+    min-height:56px;
+  }
+  h1{font-size:18px}
+  .eyebrow{font-size:9px}
+  #stats{font-size:9px}
+  .mobile-tools{
+    position:absolute;
+    top:62px;
+    right:8px;
+    z-index:60;
+  }
+  .mobile-tools button{
+    min-height:34px;
+    padding:0 10px;
+    font-size:11px;
+  }
+  #stage{
+    margin-top:44px;
+    aspect-ratio:1/1;
+    width:100%;
+    max-height:none;
+  }
+  canvas{width:100%;height:100%}
+  #controls{
+    grid-template-columns:152px 1fr;
+    gap:12px;
+    margin-top:12px;
+    align-items:center;
+  }
+  .dpad{height:138px}
+  .dpad button{
+    width:52px;height:52px;
+    font-size:22px;
+    border-radius:12px;
+  }
+  [data-dir=up]{left:50px;top:0}
+  [data-dir=left]{left:0;top:44px}
+  [data-dir=down]{left:50px;top:44px}
+  [data-dir=right]{left:100px;top:44px}
+  .actions{display:block}
+  .actions button{display:none}
+  .actions .primary{
+    display:block;
+    width:100%;
+    height:76px;
+    border-radius:18px;
+    font-size:20px;
+  }
+  .dialog{
+    left:6px;right:6px;bottom:6px;
+    min-height:112px;padding:12px;
+  }
+  #speaker{font-size:14px}
+  #dialogText{font-size:14px;line-height:1.5}
+}
+.menu-overlay .panel{max-width:340px}
+.menu-overlay button{
+  width:100%;
+  min-height:44px;
+  margin-top:8px;
+  border:0;
+  border-radius:9px;
+  background:#30485d;
+  color:#fff;
+  font-weight:800;
+}
+
+
+/* 1.3 usability fixes */
+#nextGuide{
+  position:absolute;
+  left:50%;
+  top:22px;
+  transform:translateX(-50%);
+  z-index:12;
+  padding:4px 9px;
+  border:1px solid rgba(255,229,111,.9);
+  border-radius:6px;
+  background:rgba(4,11,18,.88);
+  color:#ffe56f;
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+  pointer-events:none;
+}
+#eventPanel{
+  align-items:flex-start;
+  overflow-y:auto;
+  padding:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom));
+}
+#eventPanel .panel{
+  margin:auto;
+  max-height:calc(100dvh - 18px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.choice-note{
+  display:block;
+  margin-top:3px;
+  color:#9fc0d2;
+  font-size:11px;
+  font-weight:400;
+}
+.result-box{
+  border:1px solid #67e1a3;
+  border-radius:10px;
+  padding:12px;
+  margin:12px 0;
+  background:#0a1d21;
+}
+.result-box.bad{
+  border-color:#ff8e8e;
+  background:#251317;
+}
+.result-box h3{margin:0 0 8px}
+.impact{
+  margin:5px 0;
+  font-size:13px;
+}
+.impact.good{color:#83dfa8}
+.impact.bad{color:#ff9b9b}
+.question-help{
+  padding:8px 10px;
+  border-left:4px solid #6fd8ff;
+  background:#0b1b27;
+  font-size:12px;
+  line-height:1.5;
+}
+.check-row{
+  display:flex!important;
+  align-items:center;
+  gap:10px;
+  min-height:42px;
+  padding:7px 5px;
+}
+.check-row input[type="checkbox"]{
+  width:22px!important;
+  height:22px!important;
+  min-width:22px;
+  margin:0!important;
+  accent-color:#42a5f5;
+}
+.inline-error{
+  color:#ff9b9b;
+  margin:10px 0 0;
+  line-height:1.5;
+}
+@media(max-width:700px) and (orientation:portrait){
+  #eventPanel .panel{
+    width:96%;
+    max-height:calc(100dvh - 12px);
+    padding:15px;
+  }
+  #eventPanel h2{font-size:20px;margin-top:0}
+  #eventPanel .card{font-size:13px}
+  #eventPanel button{min-height:48px}
+  #nextGuide{top:21px;font-size:9px}
+}
+
+
+/* 1.4 BGM and mobile polish */
+#floatingBgmBtn{
+  position:absolute;
+  right:8px;
+  top:48px;
+  z-index:80;
+  min-width:72px;
+  min-height:38px;
+  padding:0 10px;
+  border:2px solid #ffe56f;
+  border-radius:10px;
+  background:rgba(19,34,49,.96);
+  color:#ffe56f;
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 3px 12px rgba(0,0,0,.35);
+  touch-action:manipulation;
+  pointer-events:auto;
+}
+#floatingBgmBtn.playing{
+  background:#67e1a3;
+  color:#062115;
+  border-color:#d9ffe9;
+}
+#floatingBgmBtn:active{
+  transform:scale(.96);
+}
+#bgmStatus{
+  margin-top:8px;
+  font-size:12px;
+  color:#9fc0d2;
+}
+#eventPanel,#mobileMenu,#questPanel{
+  z-index:100;
+}
+@media(max-width:700px) and (orientation:portrait){
+  #floatingBgmBtn{
+    top:54px;
+    right:7px;
+    min-width:78px;
+    min-height:42px;
+    font-size:13px;
+  }
+  .mobile-tools{
+    top:62px;
+    right:94px;
+  }
+}
+@media(orientation:landscape) and (max-height:600px){
+  #floatingBgmBtn{
+    top:6px;
+    right:164px;
+  }
+}
+
+
+/* MINPAKU QUEST 1.5 visual polish */
+:root{
+  --line:#7de3ff;
+  --accent:#74edb1;
+  --gold:#ffe177;
+}
+#stage{
+  background:
+    radial-gradient(circle at 50% 35%,rgba(98,190,235,.18),transparent 42%),
+    linear-gradient(#0a1d2d,#07111b);
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.48),
+    inset 0 0 35px rgba(69,190,235,.12);
+}
+#stage::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:8;
+  pointer-events:none;
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:100% 4px;
+  mix-blend-mode:screen;
+  opacity:.25;
+}
+.title-panel{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 0,rgba(116,237,177,.17),transparent 46%),
+    linear-gradient(180deg,rgba(18,42,59,.995),rgba(8,22,34,.995));
+  border-color:#9ceaff;
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.5),
+    inset 0 0 28px rgba(125,227,255,.08);
+}
+.title-panel::before,.title-panel::after{
+  content:"";
+  position:absolute;
+  width:110px;height:110px;
+  border:1px solid rgba(255,225,119,.18);
+  transform:rotate(45deg);
+}
+.title-panel::before{left:-75px;top:-70px}
+.title-panel::after{right:-75px;bottom:-70px}
+.title-panel h2{
+  font-size:30px;
+  letter-spacing:.12em;
+  color:#e6fbff;
+  text-shadow:0 0 14px rgba(125,227,255,.5);
+}
+.title-panel p{
+  color:#f2f8fb;
+  letter-spacing:.08em;
+}
+.title-mark{
+  color:#ffe177;
+  filter:drop-shadow(0 0 8px rgba(255,225,119,.45));
+}
+.panel button.primary{
+  box-shadow:0 7px 18px rgba(56,196,135,.24);
+}
+.dialog{
+  backdrop-filter:blur(3px);
+  box-shadow:0 8px 24px rgba(0,0,0,.42);
+}
+#speaker{
+  text-shadow:0 0 8px rgba(127,220,255,.35);
+}
+#nextGuide{
+  top:24px;
+  max-width:calc(100% - 130px);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:center;
+  box-shadow:0 3px 14px rgba(0,0,0,.36);
+}
+#floatingBgmBtn{
+  box-shadow:0 5px 17px rgba(0,0,0,.4);
+}
+canvas{
+  filter:saturate(1.14) contrast(1.05) brightness(1.04);
+}
+@media(max-width:700px) and (orientation:portrait){
+  .title-panel h2{font-size:25px}
+  #nextGuide{
+    top:21px;
+    left:6px;
+    right:96px;
+    max-width:none;
+    transform:none;
+    white-space:nowrap;
+  }
+}
+
 </style>
 </head>
 <body>
 <div id="app">
-<header>
-  <h1>OPERATION HERMES <span class="badge">v1.6</span></h1>
-  <div id="stats"></div>
-</header>
-<div id="missionbar"><b>目的：</b><span id="missionText"></span></div>
-<div id="gamebox">
-  <canvas id="game" width="320" height="300"></canvas>
-
-  <div id="start" style="display:flex">
-    <div class="card" style="text-align:center">
-      <h2 style="color:#bdeaff;margin-top:0">OPERATION HERMES</h2>
-      <p>遊びながら民泊開業を学ぶRPG</p>
-      <p style="font-size:12px;color:#c2d1dc">黄色い◇が付いた人・建物へ向かおう。<br>スマホは下の十字キー、PCは矢印キーで操作できます。</p>
-      <button class="big" id="startBtn">作戦開始</button>
-    </div>
-  </div>
-
-  <div id="dialog">
-    <div class="card" id="dialogCard">
-      <div class="name" id="dialogName"></div>
-      <div class="text" id="dialogText"></div>
-      <div class="choices" id="dialogChoices"></div>
-      <div class="hint">画面タップ / TALKで進む</div>
-    </div>
-  </div>
-
-  <div id="panel">
-    <div class="card">
-      <div class="name">MISSION</div>
-      <div class="text" id="panelText"></div>
-      <div class="choices"><button class="choice" onclick="closePanel()">閉じる</button></div>
-    </div>
-  </div>
-
-  <div id="ending">
-    <div class="card">
-      <div class="name">MISSION COMPLETE</div>
-      <div class="text" id="endingText"></div>
-      <div class="choices"><button class="big" onclick="location.reload()">もう一度遊ぶ</button></div>
-    </div>
-  </div>
+<header><div><div class="eyebrow">COMPLETE STORY BUILD 1.5 POLISHED</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
+<div class="mobile-tools"><button id="menuBtn" type="button">メニュー</button><button id="fullscreenBtn" type="button">全画面</button></div>
+<main id="stage">
+<canvas id="game" width="320" height="320"></canvas><div id="nextGuide">◆ 黄色いダイヤの人に話しかけよう</div><button id="floatingBgmBtn" type="button">♪ BGM再生</button>
+<section id="titleScreen" class="overlay"><div class="panel title-panel"><div class="title-mark">⚕</div><h2>MINPAKU QUEST</h2><p>一軒の宿が、町の未来を変える。</p><button id="newGameBtn" class="primary">はじめから</button><button id="continueBtn">つづきから</button><div class="note">最初からエンディングまで遊べる完成ストーリー版</div></div></section>
+<section id="setupScreen" class="overlay hidden"><div class="panel"><h2>主人公を決める</h2><label>名前</label><input id="playerName" maxlength="8" value="リュウ"><label>職業</label><select id="job"><option>サラリーマン</option><option>主婦</option><option>フリーランス</option><option>学生</option></select><button id="startBtn" class="primary">ユリイカ村へ</button></div></section>
+<section id="dialog" class="dialog hidden"><div id="speaker"></div><div id="dialogText"></div><div id="choices"></div><div class="dialog-hint">TALK / タップで進む</div></section>
+<section id="questPanel" class="side-panel hidden"><h3 id="questTitle"></h3><div id="questList"></div><button id="closeQuest">閉じる</button></section>
+<section id="eventPanel" class="overlay hidden"><div class="panel" id="eventContent"></div></section>
+<section id="mobileMenu" class="overlay menu-overlay hidden">
+      <div class="panel">
+        <h2>メニュー</h2>
+        <button id="menuBgm">BGMを再生／停止</button><div id="bgmStatus">現在：停止中</div><button id="menuQuest">クエスト</button>
+        <button id="menuSave">セーブ</button>
+        <button id="menuClose" class="primary">ゲームに戻る</button>
+      </div>
+    </section>
+    <div id="toast" class="toast hidden"></div>
+</main>
+<section id="controls"><div class="dpad"><button data-dir="up">▲</button><button data-dir="left">◀</button><button data-dir="down">▼</button><button data-dir="right">▶</button></div><div class="actions"><button id="talkBtn" class="primary">TALK</button><button id="questBtn">QUEST</button><button id="saveBtn">SAVE</button></div></section>
 </div>
-
-<div id="controls">
-  <div id="dpad">
-    <button class="ctrl" id="up">▲</button><button class="ctrl" id="left">◀</button>
-    <button class="ctrl" id="down">▼</button><button class="ctrl" id="right">▶</button>
-  </div>
-  <div id="actions">
-    <button class="action" id="talk">TALK</button>
-    <button class="action" id="menu">MISSION</button>
-    <button class="action" id="bgm">BGM OFF</button>
-    <button class="action" id="reset">RESET</button>
-  </div>
-</div>
-</div>
-
 <script>
-const cvs=document.getElementById('game'),ctx=cvs.getContext('2d');ctx.imageSmoothingEnabled=false;
-const T=16,C=20,R=18;
-let started=false,step=0,dialogQueue=[],dialogOpen=false,choiceLock=false,bgmOn=false,audio=null;
-const s={money:100,knowledge:0,trust:0,reviews:5,revenue:0,complaints:0};
-const missions=[
-"町長に話しかける","空き家紹介所で物件を選ぶ","消防署で事前相談する","保健所のクイズに答える",
-"旅の行政書士に相談する","運営方針を決める","清掃トラブルに対応する","近隣クレームに対応する","民泊ギルドへ報告する"
+"use strict";
+const TILE=16,MAP_W=32,MAP_H=20,SAVE_KEY="operationHermesCompleteV1";
+const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");ctx.imageSmoothingEnabled=false;
+const ASSET_DATA={"grass": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAa0lEQVR4nGPMX5n6n4ECwESJZvobICzAxyAswIcixgJjfP3yjYGBgYGBm4cLpwFvP3zCEIMbgE8jPjDEApEmBrAQVoId8HNzU2bAx69fGRgY8Hjh/btPDO/fYcY7OsDpAkEhPlxSKGDgYwEAaz8Rx+/Le4EAAAAASUVORK5CYII=", "road": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAASklEQVR4nGM8vrXlPwMFgIkSzdQ3QFhEmDID3r55S5kB5ACKDWB59fQxZQaISctSZMDAhwHJBqCnFZINQE8rtPcCoeRN0ABCyRsALhoPI40JSpgAAAAASUVORK5CYII=", "water0": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANklEQVR4nGNUypz4n4ECwESJ5sFhAGPYvjsYYXBm9VY42yTUG0MTsjzlLhiNhdFopIYLKDYAABa8FqOl4ROYAAAAAElFTkSuQmCC", "water1": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANUlEQVR4nGNUypz4n4ECwESJ5sFhAGPYvjv/z6zeChcwCfXGUIRPnnIXjMbCaDRSwwUUGwAA/H8YS8CxmXgAAAAASUVORK5CYII=", "tree": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAUCAYAAACEYr13AAAAeElEQVR4nGNgoBAw4pKIWub3H11sWdQmDPVMVHeBVZ3tfwYGBgYFDUEMxQ9uvGc41nQYRQ/FLhh4A1hgDJVIPYxQxwZg6u4sv8SIYgA6eHDjPVEuGPgwoF4gwsCr2x/p6wLq5wVkEGcpB08bi44/wqp24L0w8AYAALsgGjEQ+JunAAAAAElFTkSuQmCC", "flower": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMElEQVR4nGNgGAW0Bf8fRP+nWDNVDMEHmPBJak2/zaBZbobXELwGEANGDaCCARQDANcDEGSnxgrsAAAAAElFTkSuQmCC", "lamp": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANklEQVR4nGNgoBAwogt8fdT+H58GbrlKFD1MlLpg1AAqGIAXaJna/9cytccbrQPvhVEDqGAAADpmB1bwygPFAAAAAElFTkSuQmCC", "bench": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAARElEQVR4nGNgGAUDDxhhjHwPrf+kaJy44xojAwMDAxOlLhhkBtx48Z3hxovvOBUTkmdwN1D8726giDMwsckPsjAYEAAAI2AVSGvtsC4AAAAASUVORK5CYII=", "house": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAXklEQVR4nGNgoDWo8jT7j0+eiRjN+AzBaQC6JlyGYDUAl2Js4ozEaMQG2rafYkRxASmakdUzkqMZGcC9cGpxDkmGmMVOQfUCuYAFn2Rc1zEU/qIyKww1FLtg1AAGBgA4vR7Md8HgCQAAAABJRU5ErkJggg==", "guest": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAZElEQVR4nGNgoCV4f3D2//cHZ//Hp4YJn2ZsbKIMwKYBlyE4XUAswGqAoH0qIzFiDAwMDBiC6VOu4Q20mTlaKHpo44VRA0gDLOgCB2fGwNn26UswxAgagAxgca6ha0RaXiAFAAB3eSC05TdMLAAAAABJRU5ErkJggg==", "property": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABACAYAAADCmvPmAAAA/ElEQVR4nO3asU3DQBiAUTtioIjCG1CwAU02oI/EBumzAQ07sEEKlI1CRZ04KCQfea9ycbZ+6dM1dx4GALhP49vzdLj2EJxvce0B+B0B4wSMEzBOwDgB4wSMEzBOwLjx52H3/upEJmRabcdhsAPzBIwTME7AOAHjBIwTMO5h7gvLp8eja/afX2cN4/vz2YFxAsYJGCdgnIBxAsYJGCdgnIBxbuSj3Mj/EwLGCRgnYJyAcQLGCRgnYJyAcQLGCRgnYJyAcbP/C71lL5vdyWs/1tMFJ/k7dmCcgHECxgkYJ2CcgHECxgkYJ2CcgHECxgkYJ2CcgHECxgkYJ2DcN5lnGXJJ6w2YAAAAAElFTkSuQmCC", "bank": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABACAYAAADCmvPmAAACWklEQVR4nO3bz0sUcRzG8Wdm1mpD2Lzspd2oKBJPXUpZWAPxtLAg3SLoVrQE/Th4DJQOXQIJD94V/4JgITTFZPFo2KENRSqtxEOiBHrZ1UOwuqPYTjoNz8fndXKGneUzvPc7q1/QgVG/Pz/Z9p9rvvbaiWKWMJm7oYPC+VkK6UY9wHFqJF6Q1zEw80n0R5kufUFp5itc18HZeBPu3rmOlnPxumssrMTY7aevjHwal2o/fSqv4sPcT/Q+y8LzXLwdm8fI6CweP8rUXWHh3k08QocLS3XHY+8WkM+1wvP+3N6tzktoOuWhWt0+9DpGsagHCMOPlQ2kzidqx2dOx1C43x7hROExGbBa2V1p4xMLmPu4gvWNLfQ/745wqnCYeIT6JZPNWP6+DgDo7rqChw/a8WttM+KpwmEyYDZzEW+KZVQqVQDA1PtFuPS/bx7MRMB7Q+m645s30kinEnjxchIDgyUkEnG43v5b9V/HyOR3oOMAPfk29OTbaucyHRcinCg8JlYgEHw1WVh9gKGAQONRrMQD9myllaf76Hcl9kol1/adW15tiWCScLRm+xzA6HcgYCvWYUw9Qk8iBSSngOQUkJwCklNAcoH/jLh89e9bUovz3/5pGL1/cFqB5BSQnAKSU0ByCkhOAckpIDkFJKeA5ALvxBznLoLe/+i0AskpIDkFJKeA5BSQnAKSU0ByCkhOAckpIDkFJKeA5BSQnKl/L8sVig2/tjiUC3GS/0crkJwCklNAcgpITgHJKSA5BSSngOQUkJwCklNAcgpITgHJKSA5BSSngOQUkNwOt2CEKmwMk1wAAAAASUVORK5CYII=", "fire": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABACAYAAADS1n9/AAABW0lEQVR4nO3cMWrCUByA8RfJGRy9gIMBXeskVASn7r1Cl04eoFOXnqWLglO7VoiDF3DsJXSToIPVVF943/ebBMPjIV/+ERPMQuLKh/6u7hrF9yr7j700UR57AzH1vn4Or9fDQcSdxNOKvQHFhZoA1TP+3HuUiZBPnp5rXyMb7XdTe4mUPyMvAXCoS8DxWPdLoBMADzUBjlHP+qrkA5i1u7G30GheAuAMAM4A4AwA7nCX63O+TPbXLp2ajkdZCE4APAOAMwA4A4AzADgDgDMAuItvBj0W27PHLMrOVZtx/fuv7wSAMwA4A4AzADgDgDMAOAOAMwA4A4DziSAonwhSCMEA8AwAzgDgDADOAOAMAM4A4AwAzgDgDADOAOAMAC75P4mqenmd/fnYj/e3G+6kOZwAcAYAZwBwBgBnAHAGAGcAcAYAZwBwBgBnAHAGAGcAcAYAZwBwBgBnAHB7OOAyPx4bHrAAAAAASUVORK5CYII=", "tavern": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABACAYAAADCmvPmAAAA+klEQVR4nO3asW3CQBiAURtlDhZgBwYAKRWL0IQZkiaLUCElA7EIVNSJiQL5wnuVi7P1S5+uufMwAMBjGrfLxeneQ3C92b0H4GcEjBMwTsA4AeMEjBMwTsA4AePGy8N+t3EiE7J53Y/DYAfmCRgnYJyAcQLGCRgnYNzT1Beet6sv1xzeP68axvenswPjBIwTME7AOAHjBIwTME7AOAHj3MhHuZH/JwSMEzBOwDgB4wSMEzBOwDgB4wSMEzBOwDgB4yb/F/qXvXwcv732bT3/xUluxw6MEzBOwDgB4wSMEzBOwDgB4wSMEzBOwDgB4wSMEzBOwDgB4wSMOwPXyRlTVHQIWwAAAABJRU5ErkJggg==", "guild": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABQCAYAAADRAH3kAAAC/0lEQVR4nO3dS0hUUQDG8e9651E2pZVQLhRKEloFtjByERkSaC4CW0iLEiqKbCNBBgYKriIXoWGEtAuKXBVGD7IXQVG0yAgy2vSSccY0Hzna3DstBkanB/mYh3O/77fy4uWcM/rnnDs4oIEM1f/8eCTda/hdcekFI91rmK+sdC9A0ksBkHNUAL3PJnDmfADN7QGc7RrCt+9W7HuHmwbi7p19/a+vZ6s7/RWtnUG0dgbR0hHA4xc/Erz69HCVVJ5ccmfp3EzGXfX1T+HlmxCa6/NgmgZuPhjDpWvDaDySl5DZXKaBpmPRsaamI2i7PASvx0DpluWxezLxZ+mYHaDn4Rhqdq+EaUafwyq2++BxG7DtxM/l9Rio3ZOD20/GEz94irnSvYBE+ewPoyDfHbte5jXQULc2afMV5rvgHwonbfxUcUwAtj2z+956NI5Xb0MYGbVw7tS6pMxn2YCZlXHv+v7gmCNgfZ4LnwZ+AgAqd/jQcHANgsMzD4GGgdhxYNlA1iJf+YeP03E7TqZyTADl21ag+84YLCu6E9x9OhH3S95Y4EZffwgA8PpdCEWFngXPNTFp42rPKKp3+ha15qXAMUdAWUk2vvjDaGwbxOpVJsq2Zsdt0Qf25qLr+ghu9EYf3A7ty/3rOGErgpaOQOy6eIMHtVU5CFsRtHYGAQCWFUF1uQ+bi7zJe0EpYmTiWxdJHMccAbIwCoBc7JDs6divo4BIVf0VA9AOQE8BkFMA5BQAOQVATgGQUwDk5v23gIqaXf+95173/QUtRuOnfnztAOQUADkFQE4BkFMA5BQAOQVATgGQUwDk9IkgUvpEkABQAPQUADkFQE4BkFMA5BQAOQVATgGQUwDkFAA5BUBOAZBTAOQUADkFQE4BkFMA5BQAOQVATgGQUwDkFAA5BUBOAZBTAOQUADkFQE4BkHPM/wyaixMX38/53vajm5K4kqVDOwA5BUBOAZBTAOQUADkFQE4BkFMA5BQAOQVATgGQUwDkFAA5BUBOAZBTAOQUALlfXqqvcB6cbX0AAAAASUVORK5CYII=", "health": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABACAYAAADCmvPmAAABL0lEQVR4nO3boQ3CQBhA4R7pBBgsikUwTUCwAoNgYA9YAYGoYREUFsMKh0PAJZRCad7xPtlcyDUv94trCEWmYozx8VkIIfSxly4N+t6APmNAuCxGSmpcNkUfq+VsvW398jmgv78jFM6AcAaEK/vewDfMN7unZ4fVstE6Ok8gnAHhshihKTmOyxRPIJwB4e7XSKfLFX0j8W8mo2EoCk8gngHhDAhnQDgDwhkQzoBwb1+ljeP+5ZpzWLTYir/fhicQzoBwBoQzIJwB4QwIZ0A4A8IZEM4v8lB+kc+EAeEMCGdAOAPCGRDOgHAGhDMgnAHhDAhnQDgDwmX1F+tqWjVeWx/rDnfyO55AOAPCGRDOgHAGhDMgnAHhDAhnQDgDwhkQzoBwBoQzIJwB4QwIZ0C4G4WXKjc0yiSuAAAAAElFTkSuQmCC", "mayor": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAAAwCAYAAADJuP4nAAADz0lEQVR4nO2aXWxTVRzAf/f2bqU4tHNrt64bC3Ftp5mZYSAqxGmoL8w3DA/OJzVGX5TF8ODHo/FNH/yI0cSPFzQ+iDxoM40ORAVsRURC1xacrHRD15KuA9amH/f6UGjWjAXXwW5PPL+n9pzT//nf+7v/c++5qYIAxA+9YZg19/oHX1TMmvu/oJqdgGRlSIGCo5mdQK28+vKH3HlXN8NP+Cttn382xsmTf/Ha609V2kLBCPu//ImXXhmmqcnGzD9p9u79nt0jO1GU8ur49lv72LXrIc4lkhz5+RQWi0qppPPAtr5KnMfv880DQUAB1gEjnx6N/rA6R7s02h5/v2n3l5WgaRZSyVl03UBVFQwDLlyYQ9MsVePGw5Ns3dZHJBJn0yYfzrZm2tub+ePEBP333EFkPE5Ly61k5uYJBaM8/cyj2GyNZLN5Pvl4lOcfvtuwWlTOX87humXNIEBBN0jn8gf3+PtNOfaFCL2EdrhbSSSSAJyfTtHuaqnqLxSK5PNFNt/bSyQcr7Rv9w8wNnYcwzA4cOB3/P4BDh08wdDQFmy2RgBstkZ2DG3hYr64aN4GVaFUJ5e90AK93i5i0XMAxGIJvL7Oqv5YNIHX14XDYSedvkippAPgdNpxuW5n3xc/Yrc34WxrZmYmTYe7ter3bncrRX2xqVxJx2qpj1NXH1nUiMfbyZnTUwD8eWYaT4+7qj986izHfzvNu+/sZ25unomJ6Urfdv9Gfg1F8T+yccn4hmEs+AypbJ5kNk86V+A2a308PtRHFjWydq0VRVXIzF4CwLqmsdKn6wbJVIYXRnYC5QqNjMfxeMpV6nDYsVobcDjsADjbmpmaStHd3VaJMT2VQlPLDzqKAq1XltdL+SLzhRLrGs0/fUJXIIDX18U3oyF6PNXVN3n2b1wL7okbNrQTiyWWjDM42E/g61/I5fIAZLN5AoHgNSVZNZXCNZZWMzD/Elohvb3r+XY0yO6Rx6raw+FJeno6Kt8bGrTyNmJmFqfTviiOx9tJJnOZD97/Cu3qNmJrH4cDRxeN1VSVgl644cdSC4qo2whJGeGX0P87UqDgVN60H/noObmUCsT9T76ngKxA4ZECBUcKFBwpUHCkQMGRAgVHChScZb8LHdix+bpjjgVCNSUj4y8fWYGCIwUKjhQoOFKg4EiBgiMFCo4UKDjC/ydmIcNvHrv+oCtjIt89e5OzWR1kBQrOsivwRr5FMCP+zZ5ntfK/iqxAwZECBUcKFBwpUHCkQMGRAgVHChQcKVBwpEDBkQIFRwoUHClQcKRAwZECBUcKFJx/ATtgJ76agRNOAAAAAElFTkSuQmCC", "player": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAk0lEQVR4nGNgGGDAiC4Qba7xH5+GpSdvYOihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4QD/+fdxJiJ8cuTqZ8GmMPGBGyF78AJS9A++KBh1AL0BRiK8NTkKzlbLXUYVS5DNJOgAZLAxUZGRgYGBQdPIkmD2w2bZ9XPHCepHj4IALHxsYrgAyfoHPA0AACZ8LjY72seFAAAAAElFTkSuQmCC", "mayor_char": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAoElEQVR4nGNkgIJcN+3/DCSAybuuMiLzydXPRIomWoABdwAjukCpvxneoOzeeApDDyX6sRr2bv9MrIYIOabjtZwc/QMeBRgOODHJF2cQ4pMjVz8LNoW3Lm8hZA9eQIr+wRcFow6gN8BIhIkL3sDZ8xNEqGIJspkEHYAMLPI2MzIwMDBoGlkSXdEgW3b93HGC+tGjIAALH5sYLkCy/gFPAwC58DfFitd/nAAAAABJRU5ErkJggg==", "admin": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAA80lEQVR4nGNkQAL/////z0AEYGRkZMQmTo5+JmI00BLAHUCs63GpJVc/C7KEsLAwUQa8ffsWqzg5+lmwSb4/MIuBgYGBQSW4koGBgYHhztp2BgYGBgZBhzSClpCqHyUxCQkJERWM7969w5oIydEPZ8jrWsE1n58Uj1WjYd5COPvh5WMojiBXPyMDAwPDw4cP4ZrtfCLxuj5e7iOc3bT1KsX6B082HHXAQAGMcoCLFZGTvv3GmttIBshmEnQAqQbgU0uMB/BGwcPLxwIfXj4WSLTtZOhnYWBgYJCXl4c5NUDTyHI9Pg1NW68GMjAwbEAWo0Q/AM4Ic1vzLHU9AAAAAElFTkSuQmCC", "rina": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAkklEQVR4nGNgGGDAiC6QZav1H5+GaYevYeihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YBHXZtxJiJ8cuTqZ8Gm8MtpKUL24AWk6B98UTDqAHoDjETovqINzt4ZUUUVS5DNJOgAZCBX5svIwMDAoGlkSTD7YbPs+rnjBPWjR0EAFj42MVyAZP0DngYAul4vLMMVJa8AAAAASUVORK5CYII=", "ken": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAoUlEQVR4nGNkQAL/r3j/ZyACMOpsZcQmTo5+JmI00BIMuAMwgtJKSxVvMB67dhtr8JOrH6th7/bPxGqIkGM6XsvJ0T/gUYDhgJc+rjiDEJ8cufpZsCn83buGkD14ASn6B18UjDqA3gAjETo8+wJnH5DioYolyGYSdAAyEN+ym5GBgYFB08iSqEoG3bLr544T1I8eBQFY+NjEcAGS9Q94GgAA4Ck3PmU09ggAAAAASUVORK5CYII=", "sara": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAjUlEQVR4nGNgGGDAiC4Q7mj6H5+GlftPY+ihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YB3X77iTET45MjVjxEkhCwR4uHGGw2k6h98UTDqAHoDFnQBazsXOPvooT1UsQTZTIIOQAawFKtpZEkw+2Gz7Pq54wT1o0dBABY+NjFcgGT9A54GABElNC+3f7xkAAAAAElFTkSuQmCC", "emma": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAkklEQVR4nGNgGGDAiC6QaqXzH5+G2ceuYOihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YDsQ104ExE+OXL1s2BTWMv8kZA9eAEp+gdfFIw6gN4AIxHuK1gPZztNCKSKJchmEnQAMphqV8bIwMDAoGlkSTD7YbPs+rnjBPWjR0EAFj42MVyAZP0DngYAI70t9EL40t0AAAAASUVORK5CYII=", "mori": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAkklEQVR4nGNgGGDAiC6gqqr6H5+G27dvY+ihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YBrB6twJiJ8cuTqZ8Gm8AXTQ0L24AWk6B98UTDqAHoDjEQYXLgfzl7b70gVS5DNJOgAZKBl38bIwMDAoGlkSTD7YbPs+rnjBPWjR0EAFj42MVyAZP0DngYAVpIvAhXo82AAAAAASUVORK5CYII=", "child": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAkklEQVR4nGNgGGDAiC4Q76D3H5+GhQcuYeihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YBPiy/gTET45MjVz4JNIcsTc0L24AWk6B98UTDqAHoDjERo3p8JZ58snE4VS5DNJOgAZMAXa8DIwMDAoGlkSTD7YbPs+rnjBPWjR0EAFj42MVyAZP0DngYAge0t/m++vTQAAAAASUVORK5CYII=", "cleaner": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAkklEQVR4nGNgGGDAiC5gY6L/H5+GI2cuYuihRD8TPsX0AAPuAKzB+W7/TKzBKOSYjjf4ydE/4CGA4YCiHf9xJiJ8cuTqZ8GmsOVnGiF78AJS9A++KBh1AL0BRiLcXmUFZ3u2HaOKJchmEnQAMujzYGRkYGBg0DSyJJj9sFl2/dxxgvrRoyAACx+bGC5Asv4BTwMAl0UvSvPtIGEAAAAASUVORK5CYII="},assets={};let ready=false,assetLoaded=0;
+function makeFallbackAsset(name){
+ const c=document.createElement("canvas");c.width=16;c.height=16;
+ const g=c.getContext("2d");g.fillStyle="#6fa965";g.fillRect(0,0,16,16);
+ g.fillStyle="#1d2a36";g.fillRect(3,3,10,10);
+ const img=new Image();img.src=c.toDataURL("image/png");return img;
+}
+Promise.all(Object.keys(ASSET_DATA).map(name=>new Promise(resolve=>{
+ const i=new Image();
+ i.onload=()=>{assets[name]=i;assetLoaded++;resolve();};
+ i.onerror=()=>{assets[name]=makeFallbackAsset(name);resolve();};
+ i.src=ASSET_DATA[name];
+}))).then(()=>{ready=true;});
+
+const chapters=[
+{title:"第一章　宿のない村",steps:["村長の依頼を聞く","支度金を受け取る","旅の行政書士に会う","空き家紹介所へ行く","消防署へ相談する","保健所へ相談する","行政書士に報告する"]},
+{title:"第二章　初めての物件",steps:["候補物件を比較する","物件を決定する"]},
+{title:"第三章　消防設備",steps:["必要な消防設備を選ぶ","消防検査に合格する"]},
+{title:"第四章　保健所と届出",steps:["必要な衛生設備を選ぶ","届出を完了する"]},
+{title:"第五章　最初のゲスト",steps:["宿の特徴を決める","最初のゲストを迎える"]},
+{title:"第六章　トラブル祭り",steps:["騒音苦情に対応する","鍵トラブルに対応する","清掃トラブルに対応する"]},
+{title:"第七章　180日の壁",steps:["今後の運営方針を選ぶ"]},
+{title:"最終章　ユリイカ村の再生",steps:["村長に報告する","旅の行政書士を見送る"]}
 ];
-const map=[
-"~~~~~~~~~~~~~~~~~~~~","~~~~==~~~~~~~~~~==~~~~","....==...........==...","....................",
-"..#####.....#####...","..#...#.....#...#...","..#...#.....#...#...","....................",
-".....#####..........",".....#...#....#####.",".....#...#....#...#.","..........+...#...#.",
-"..#####...+.........","..#...#...+..#####..","..#...#...+..#...#..","..........+..#...#..",
-"....++++++++++++....","...................."
+
+const buildings=[
+{name:"空き家紹介所",x:3,y:2,w:7,h:4,kind:"property"},{name:"銀行",x:12,y:2,w:7,h:4,kind:"bank"},{name:"消防署",x:22,y:2,w:8,h:4,kind:"fire"},
+{name:"酒場",x:3,y:10,w:7,h:4,kind:"tavern"},{name:"民泊ギルド",x:12,y:9,w:8,h:5,kind:"guild"},{name:"保健所",x:23,y:10,w:7,h:4,kind:"health"},{name:"村長宅",x:13,y:15,w:7,h:3,kind:"mayor"}
 ];
-const buildings={
- estate:{x:2,y:4,w:5,h:3,label:"空き家紹介所",color:"#e8a15a"},
- fire:{x:12,y:4,w:5,h:3,label:"消防署",color:"#da6666"},
- health:{x:5,y:8,w:5,h:3,label:"保健所",color:"#f3f3f3"},
- tavern:{x:13,y:9,w:5,h:3,label:"酒場",color:"#b97955"},
- guild:{x:2,y:12,w:5,h:3,label:"民泊ギルド",color:"#628ed8"},
- office:{x:13,y:13,w:5,h:3,label:"役場",color:"#ceb76c"}
-};
 const npcs=[
-{id:"mayor",name:"町長",x:10,y:3,c:"#d8c378"},
-{id:"estateNpc",name:"不動産屋",x:4,y:7,c:"#ffbb72"},
-{id:"fireNpc",name:"消防士",x:14,y:7,c:"#ff7777"},
-{id:"healthNpc",name:"保健所職員",x:8,y:12,c:"#e9f4ff"},
-{id:"hermes",name:"旅の行政書士",x:11,y:12,c:"#d8e7f0",white:true},
-{id:"host",name:"先輩ホスト",x:15,y:12,c:"#b98aff"},
-{id:"neighbor",name:"近隣住民",x:9,y:16,c:"#86d17b"},
-{id:"guildNpc",name:"ギルド受付",x:4,y:15,c:"#6fa7ff"}
+{id:"mayor",name:"村長",x:16,y:14,asset:"mayor_char"},{id:"admin",name:"旅の行政書士",x:16,y:7,asset:"admin"},{id:"rina",name:"リナ",x:7,y:7,asset:"rina"},
+{id:"ken",name:"ケン",x:26,y:7,asset:"ken"},{id:"sara",name:"サラ",x:26,y:15,asset:"sara"},{id:"emma",name:"エマ",x:6,y:15,asset:"emma"},{id:"mori",name:"モリ",x:15,y:1,asset:"mori"},
+{id:"child",name:"ミナ",x:11,y:7,asset:"child"},{id:"cleaner",name:"清掃スタッフ",x:21,y:15,asset:"cleaner"}
 ];
-const p={x:10,y:16,dir:"up"};
 
-function target(){
- const ids=["mayor","estateNpc","fireNpc","healthNpc","hermes","host","host","neighbor","guildNpc"];
- return ids[step];
+let state={started:false,name:"リュウ",job:"サラリーマン",money:0,knowledge:0,trust:0,village:5,review:0,chapter:0,step:0,player:{x:16,y:8,dir:"down"},dialogOpen:false,dialogQueue:[],choiceMode:false,walkFrame:0,property:null,license:null,ending:false};
+const roads=new Set(),water=new Set();
+for(let y=0;y<19;y++)roads.add(`16,${y}`);for(let x=2;x<30;x++){roads.add(`${x},7`);roads.add(`${x},15`);}for(let y=7;y<=15;y++){roads.add(`6,${y}`);roads.add(`26,${y}`);}
+for(let x=14;x<=18;x++){roads.add(`${x},18`);roads.add(`${x},19`);}for(let x=0;x<MAP_W;x++)water.add(`${x},19`);for(let x=14;x<=18;x++)water.delete(`${x},19`);
+const trees=[[1,1],[2,2],[9,1],[10,1],[21,1],[30,2],[1,6],[30,6],[1,11],[30,11],[1,16],[30,16],[9,18],[22,18]],flowers=[[11,6],[12,6],[20,6],[21,6],[10,14],[11,14],[20,14],[21,14],[4,8],[28,8]],benches=[[12,8],[20,8],[12,14],[20,14]],lamps=[[10,7],[22,7],[10,15],[22,15]];
+
+function resetState(){state={started:false,name:"リュウ",job:"サラリーマン",money:0,knowledge:0,trust:0,village:5,review:0,chapter:0,step:0,player:{x:16,y:8,dir:"down"},dialogOpen:false,dialogQueue:[],choiceMode:false,walkFrame:0,property:null,license:null,ending:false};}
+function updateStats(){stats.innerHTML=`${state.name}／${state.job}<br>${state.money.toLocaleString()}G　知識 ${state.knowledge}　信頼 ${state.trust}<br>村の活気 ${state.village}　評価 ${state.review?state.review.toFixed(1):"-"}`;}
+function toast(t){toastBox.textContent=t;toastBox.classList.remove("hidden");clearTimeout(toast.timer);toast.timer=setTimeout(()=>toastBox.classList.add("hidden"),1800);}
+const toastBox=document.getElementById("toast");
+function saveGame(show=true){localStorage.setItem(SAVE_KEY,JSON.stringify({...state,dialogOpen:false,dialogQueue:[],choiceMode:false}));if(show)toast("セーブしました");}
+function loadGame(){const raw=localStorage.getItem(SAVE_KEY);if(!raw)return false;try{Object.assign(state,JSON.parse(raw));state.started=true;titleScreen.classList.add("hidden");setupScreen.classList.add("hidden");
+
+
+// Original retro fantasy RPG-style BGM (Web Audio)
+let bgmOn=false,bgmTimer=null,audioCtx=null,bgmStep=0;
+const melody=[
+  261.63,329.63,392.00,523.25,493.88,392.00,329.63,392.00,
+  293.66,349.23,440.00,587.33,523.25,440.00,349.23,440.00,
+  329.63,392.00,493.88,659.25,587.33,493.88,392.00,329.63,
+  293.66,349.23,392.00,523.25,493.88,392.00,329.63,261.63
+];
+const harmony=[
+  196.00,196.00,220.00,220.00,246.94,246.94,220.00,196.00,
+  174.61,174.61,196.00,196.00,220.00,220.00,196.00,174.61
+];
+const bass=[130.81,130.81,146.83,146.83,164.81,164.81,146.83,130.81];
+
+function playTone(freq,start,dur,type="square",gain=.025){
+ const osc=audioCtx.createOscillator();
+ const g=audioCtx.createGain();
+ osc.type=type;
+ osc.frequency.value=freq;
+ g.gain.setValueAtTime(0.0001,start);
+ g.gain.exponentialRampToValueAtTime(gain,start+.012);
+ g.gain.exponentialRampToValueAtTime(0.0001,start+dur);
+ osc.connect(g);
+ g.connect(audioCtx.destination);
+ osc.start(start);
+ osc.stop(start+dur+.03);
 }
-function stats(){document.getElementById('stats').innerHTML=`資金 ${s.money}万G<br>知識 ${s.knowledge}　信頼 ${s.trust}<br>★${s.reviews.toFixed(1)}　苦情 ${s.complaints}`;}
-function mission(){document.getElementById('missionText').textContent=missions[Math.min(step,missions.length-1)];}
-function solid(x,y){
- if(x<0||y<0||x>=C||y>=R)return true;
- const ch=map[y][x]; if(ch==="~"||ch==="#"||ch==="=")return true;
- for(const b of Object.values(buildings))if(x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h)return true;
- return npcs.some(n=>n.x===x&&n.y===y);
+function bgmTick(){
+ if(!bgmOn||!audioCtx)return;
+ const now=audioCtx.currentTime+.025;
+ const idx=bgmStep%melody.length;
+ playTone(melody[idx],now,.21,"square",.024);
+ if(bgmStep%2===0)playTone(harmony[Math.floor(bgmStep/2)%harmony.length],now,.32,"sine",.012);
+ if(bgmStep%4===0)playTone(bass[Math.floor(bgmStep/4)%bass.length],now,.48,"triangle",.03);
+ bgmStep++;
 }
-function move(dx,dy,dir){if(!started||dialogOpen)return;p.dir=dir;const nx=p.x+dx,ny=p.y+dy;if(!solid(nx,ny)){p.x=nx;p.y=ny}}
-function front(){let dx=0,dy=0;if(p.dir==="up")dy=-1;if(p.dir==="down")dy=1;if(p.dir==="left")dx=-1;if(p.dir==="right")dx=1;return{x:p.x+dx,y:p.y+dy}}
-function showDialog(name,lines){dialogQueue=lines.slice();dialogOpen=true;choiceLock=false;document.getElementById('dialog').style.display='flex';document.getElementById('dialogName').textContent=name;nextLine()}
-function nextLine(){
- if(choiceLock)return;
- if(!dialogQueue.length){closeDialog();return}
- const item=dialogQueue.shift();
- if(typeof item==="string"){document.getElementById('dialogText').textContent=item;document.getElementById('dialogChoices').innerHTML=""}
- else{
-   document.getElementById('dialogText').textContent=item.text;
-   const box=document.getElementById('dialogChoices');box.innerHTML="";choiceLock=true;
-   item.options.forEach(o=>{const b=document.createElement('button');b.className="choice "+(o.kind||"");b.textContent=o.label;b.onclick=()=>{choiceLock=false;box.innerHTML="";o.action();};box.appendChild(b)})
+function updateBgmUi(){
+ const floating=document.getElementById("floatingBgmBtn");
+ const status=document.getElementById("bgmStatus");
+ if(floating){
+  floating.textContent=bgmOn?"♪ BGM ON":"♪ BGM再生";
+  floating.classList.toggle("playing",bgmOn);
+ }
+ if(status)status.textContent=bgmOn?"現在：再生中":"現在：停止中";
+}
+async function toggleBgm(event){
+ if(event){
+  event.preventDefault();
+  event.stopPropagation();
+ }
+ try{
+  if(!audioCtx){
+   const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+   if(!AudioContextClass){
+    toast("このブラウザはBGM再生に対応していません");
+    return;
+   }
+   audioCtx=new AudioContextClass();
+  }
+  if(audioCtx.state==="suspended")await audioCtx.resume();
+
+  bgmOn=!bgmOn;
+  clearInterval(bgmTimer);
+  bgmTimer=null;
+
+  if(bgmOn){
+   bgmStep=0;
+   bgmTick();
+   bgmTimer=setInterval(bgmTick,250);
+   toast("BGMを再生しました");
+  }else{
+   toast("BGMを停止しました");
+  }
+  updateBgmUi();
+ }catch(err){
+  console.error(err);
+  toast("もう一度BGMボタンを押してください");
  }
 }
-function closeDialog(){document.getElementById('dialog').style.display='none';dialogOpen=false;choiceLock=false;stats();mission()}
-function advance(){step=Math.min(step+1,missions.length-1);stats();mission()}
-function result(text,good=true){showDialog(good?"結果":"結果",[text])}
-
-function interact(){
- if(!started)return;
- if(dialogOpen){nextLine();return}
- const f=front(),n=npcs.find(n=>n.x===f.x&&n.y===f.y);
- if(!n){return}
- if(n.id!==target()){showDialog(n.name,[step<8?"今の目的は別の場所です。黄色い◇を探してください。":"お疲れさまでした。"]);return}
- scene(n.id);
+const floatingBgmBtn=document.getElementById("floatingBgmBtn");
+const menuBgm=document.getElementById("menuBgm");
+if(floatingBgmBtn){
+ floatingBgmBtn.addEventListener("click",toggleBgm,{passive:false});
+ floatingBgmBtn.addEventListener("touchend",toggleBgm,{passive:false});
 }
-function scene(id){
- if(id==="mayor"){
-  showDialog("町長",["村に旅人を呼び戻す宿を――","主人公「分かりました。まずは物件を……」","町長「待ってくれ！ 契約する前に確認が必要だ！」","空き家紹介所へ向かってくれ。"]);advance();
- }else if(id==="estateNpc"){
-  showDialog("不動産屋",[{text:"候補物件を選んでください。",options:[
-   {label:"安い物件を即契約",kind:"bad",action:()=>{s.money-=10;s.trust-=1;advance();result("契約後に条例制限が判明。追加費用20万G。確認不足は大きな損失になります。",false)}},
-   {label:"条例・消防・建築を確認してから契約",kind:"good",action:()=>{s.knowledge+=2;s.trust+=1;advance();result("確認後に契約。手戻りを防げました。",true)}}
-  ]}]);
- }else if(id==="fireNpc"){
-  showDialog("消防士",["宿泊者の命を守るため、避難経路と火災報知機を確認します。","設備工事はもちろん、年1回の点検・報告が必要になる場合もあります。","消防署への事前相談が完了しました。"]);s.knowledge+=2;advance();
- }else if(id==="healthNpc"){
-  showDialog("保健所職員",[{text:"民泊に必要なものをすべて選ぶ問題です。\n正しい組み合わせはどれ？",options:[
-   {label:"トイレ・お風呂・キッチン・洗面所／不在型なら管理業者／非常用照明等",kind:"good",action:()=>{s.knowledge+=4;advance();result("正解です。非常用照明は建築基準法で求められるため、消防では求められないことがあります。",true)}},
-   {label:"上記に加えて客室内の噴水",kind:"bad",action:()=>{s.knowledge+=1;advance();result("噴水は不要です。必要設備と冗談設備を混同しないようにしましょう。",false)}}
-  ]}]);
- }else if(id==="hermes"){
-  showDialog("旅の行政書士",["まずは契約するな。確認してから契約しろ。","行政・消防・建築は、見る目的がそれぞれ違う。","順番を知れば、やり直しは減らせる。"]);s.knowledge+=3;s.trust+=2;advance();
- }else if(id==="host"&&step===5){
-  showDialog("先輩ホスト",[{text:"運営方針を決めよう。",options:[
-   {label:"定員を増やすためベッドを詰め込む",kind:"bad",action:()=>{s.reviews-=.6;s.revenue-=10;advance();result("圧迫感で低評価。単価も下がり、売上が落ちました。",false)}},
-   {label:"清掃しやすさと快適性を優先する",kind:"good",action:()=>{s.reviews+=.2;s.revenue+=15;s.trust+=1;advance();result("高評価が増え、売上も安定しました。",true)}}
-  ]}]);
- }else if(id==="host"&&step===6){
-  showDialog("先輩ホスト",[{text:"清掃報告で排水口の詰まりが判明。大量のウェットティッシュです。どうする？",options:[
-   {label:"次のゲストまで放置",kind:"bad",action:()=>{s.reviews-=1;s.revenue-=20;advance();result("水漏れと悪臭で低評価。修理費も増えました。",false)}},
-   {label:"写真保存・スッポン対応・再発防止案内",kind:"good",action:()=>{s.money-=2;s.trust+=2;s.revenue+=5;advance();result("迅速対応で営業への影響を最小限に抑えました。",true)}}
-  ]}]);
- }else if(id==="neighbor"){
-  showDialog("近隣住民",[{text:"夜間の騒音が気になると連絡が来ました。",options:[
-   {label:"法律上できるから無視する",kind:"bad",action:()=>{s.complaints+=3;s.trust-=4;advance();result("苦情が行政へ。営業継続リスクが高まりました。",false)}},
-   {label:"すぐゲストへ連絡し、翌日住民へ報告",kind:"good",action:()=>{s.complaints=Math.max(0,s.complaints-1);s.trust+=3;advance();result("迅速な対応で理解を得られました。",true)}}
-  ]}]);
- }else if(id==="guildNpc"){
-   const score=Math.round(s.knowledge*5+s.trust*4+s.reviews*10+s.revenue-s.complaints*8);
-   document.getElementById('endingText').innerHTML=
-   `最終スコア：<b>${score}</b><br><br>知識 ${s.knowledge}<br>信頼 ${s.trust}<br>レビュー ★${s.reviews.toFixed(1)}<br>売上効果 ${s.revenue}万G<br>近隣苦情 ${s.complaints}<br><br>`+
-   (score>=80?"称号：伝説の民泊運営者":score>=55?"称号：信頼されるホスト":"称号：再挑戦の新人ホスト");
-   document.getElementById('ending').style.display='flex';
+if(menuBgm)menuBgm.addEventListener("click",toggleBgm);
+updateBgmUi();
+
+const mobileMenu=document.getElementById("mobileMenu");
+const menuBtn=document.getElementById("menuBtn");
+const menuQuest=document.getElementById("menuQuest");
+const menuSave=document.getElementById("menuSave");
+const menuClose=document.getElementById("menuClose");
+menuBtn.onclick=()=>mobileMenu.classList.remove("hidden");
+menuClose.onclick=()=>mobileMenu.classList.add("hidden");
+menuQuest.onclick=()=>{
+ mobileMenu.classList.add("hidden");
+ renderQuest();
+ questPanel.classList.remove("hidden");
+};
+menuSave.onclick=()=>{
+ saveGame(true);
+ mobileMenu.classList.add("hidden");
+};
+addEventListener("resize",configureCanvas);
+addEventListener("orientationchange",()=>setTimeout(configureCanvas,150));
+
+const fullscreenBtn=document.getElementById("fullscreenBtn");
+if(fullscreenBtn){
+ fullscreenBtn.onclick=async()=>{
+  try{
+   if(!document.fullscreenElement){
+    await document.documentElement.requestFullscreen?.();
+    if(screen.orientation?.lock){
+     try{await screen.orientation.lock("landscape");}catch(e){}
+    }
+    fullscreenBtn.textContent="全画面終了";
+   }else{
+    await document.exitFullscreen?.();
+    fullscreenBtn.textContent="全画面";
+   }
+  }catch(e){
+   toast("このブラウザでは全画面にできません");
+  }
+ };
+ document.addEventListener("fullscreenchange",()=>{
+  fullscreenBtn.textContent=document.fullscreenElement?"全画面終了":"全画面";
+ });
+}
+document.addEventListener("contextmenu",e=>{
+ if(e.target.closest(".dpad,.actions"))e.preventDefault();
+});
+let lastTouchEnd=0;
+document.addEventListener("touchend",e=>{
+ if(e.target.closest("#floatingBgmBtn,#menuBgm"))return;
+ const now=Date.now();
+ if(now-lastTouchEnd<=300)e.preventDefault();
+ lastTouchEnd=now;
+},{passive:false});
+
+updateStats();return true;}catch(e){return false;}}
+function openDialog(speaker,lines){state.dialogOpen=true;state.dialogQueue=[...lines];dialog.classList.remove("hidden");document.getElementById("speaker").textContent=speaker;choices.innerHTML="";showNextDialog();}
+function showNextDialog(){if(state.choiceMode)return;if(!state.dialogQueue.length){state.dialogOpen=false;dialog.classList.add("hidden");updateStats();saveGame(false);return;}const n=state.dialogQueue.shift();if(typeof n==="function"){n();return;}dialogText.textContent=n;}
+function showChoice(prompt,opts){state.choiceMode=true;dialogText.textContent=prompt;choices.innerHTML="";opts.forEach(o=>{const b=document.createElement("button");b.textContent="▶ "+o.label;b.onclick=()=>{choices.innerHTML="";state.choiceMode=false;o.action();};choices.appendChild(b);});}
+function showEvent(title,html){
+ eventContent.innerHTML=`<h2>${title}</h2>${html}`;
+ eventPanel.classList.remove("hidden");
+ eventPanel.scrollTop=0;
+ eventContent.scrollTop=0;
+}
+function closeEvent(){eventPanel.classList.add("hidden");eventContent.innerHTML="";updateStats();saveGame(false);}
+function nextStep(){state.step++;const max=chapters[state.chapter].steps.length;if(state.step>=max){state.chapter++;state.step=0;toast(state.chapter<chapters.length?chapters[state.chapter].title:"クリア！");}updateStats();saveGame(false);}
+function currentTarget(){const c=state.chapter,s=state.step;if(c===0)return ["mayor","mayor","admin","rina","ken","sara","admin"][s];if(c===1)return "rina";if(c===2)return "ken";if(c===3)return "sara";if(c===4)return "emma";if(c===5)return ["emma","admin","cleaner"][s];if(c===6)return "admin";if(c===7)return ["mayor","admin"][s];return null;}
+
+function talkTo(id){
+ if(state.ending)return;
+ const c=state.chapter,s=state.step;
+ if(id!==currentTarget()){const generic={mayor:"村の未来を頼んだぞ。",admin:"順番を守れば、失敗は減らせる。",rina:"契約前の確認が大切です。",ken:"消防は命を守る準備だ。",sara:"衛生設備も忘れずに。",emma:"宿ができて村が賑やかになったね。",mori:"資金計画は余裕を持って。",cleaner:"清掃品質はレビューに直結します。",child:"観光客が増えてうれしい！"};openDialog(npcs.find(n=>n.id===id)?.name||"村人",[generic[id]||"こんにちは。"]);return;}
+ if(c===0){
+  if(s===0)openDialog("村長",[`${state.name}、この村には泊まる場所がない。`,"民泊を作り、村を蘇らせてほしい。",()=>showChoice("引き受けますか？",[
+   {label:"引き受ける",action:()=>{nextStep();state.dialogQueue=["ありがとう。支度金を用意した。"];showNextDialog();}},
+   {label:"不安だけど挑戦する",action:()=>{state.trust++;nextStep();state.dialogQueue=["その勇気があれば大丈夫だ。"];showNextDialog();}}
+  ])]);
+  else if(s===1)openDialog("村長",["支度金100,000Gを受け取ってくれ。",()=>{state.money+=100000;toast("100,000Gを手に入れた！");nextStep();state.dialogQueue=["中央広場の白髪の旅人に会うといい。"];showNextDialog();}]);
+  else if(s===2)openDialog("旅の行政書士",["その物件、まだ契約していないだろうな。","営業できるか確認する前に契約するな。","まず空き家紹介所、次に消防と保健所だ。",()=>{state.knowledge+=2;nextStep();showNextDialog();}]);
+  else if(s===3)openDialog("リナ",["候補物件の資料を用意しました。","契約前に消防と保健所へ相談してください。",()=>{state.knowledge++;nextStep();showNextDialog();}]);
+  else if(s===4)openDialog("ケン",["避難経路、警報器、消火器を確認します。","大きな問題はなさそうです。",()=>{state.knowledge+=2;nextStep();showNextDialog();}]);
+  else if(s===5)openDialog("サラ",["非常用照明についても確認しましょう。",`${state.name}「消防では言われなかったのに？」`,"非常用照明は建築基準法で求められる安全措置なので、消防相談だけでは求められないことがあります。",()=>{state.knowledge+=2;nextStep();showNextDialog();}]);
+  else openDialog("旅の行政書士",["事前相談は完了だ。","次は候補物件を比較する。",()=>{state.trust++;nextStep();showNextDialog();}]);
+ } else if(c===1) propertyEvent();
+ else if(c===2) fireEvent();
+ else if(c===3) healthEvent();
+ else if(c===4) openingEvent();
+ else if(c===5) troubleEvent(s);
+ else if(c===6) limitEvent();
+ else if(c===7){
+   if(s===0)openDialog("村長",["宿ができ、観光客が増え、店にも明かりが戻った。","君がこの村を変えたんだ。",()=>{state.village+=15;nextStep();showNextDialog();}]);
+   else openDialog("旅の行政書士",["……この村はもう大丈夫だ。",`${state.name}「名前くらい教えてください。」`,"名前に意味はない。","まだ宿のない町がある。",()=>ending()]);
  }
 }
 
-function drawTile(x,y,ch){
- const X=x*T,Y=y*T;
- if(ch==="~"){ctx.fillStyle="#3e9bd0";ctx.fillRect(X,Y,T,T);ctx.fillStyle="#8bd8f5";ctx.fillRect(X,Y+5,T,2)}
- else if(ch==="="){ctx.fillStyle="#8d653d";ctx.fillRect(X,Y,T,T);ctx.fillStyle="#d2a56b";ctx.fillRect(X,Y+3,T,3)}
- else if(ch==="+"){ctx.fillStyle="#cdb78d";ctx.fillRect(X,Y,T,T);ctx.fillStyle="#e6d4ad";ctx.fillRect(X+2,Y+2,4,4)}
- else if(ch==="#"){ctx.fillStyle="#417341";ctx.fillRect(X,Y,T,T);ctx.fillStyle="#5e9b54";ctx.fillRect(X+2,Y+2,12,10)}
- else{ctx.fillStyle=((x+y)%2)?"#79b968":"#83c270";ctx.fillRect(X,Y,T,T);if((x*7+y*11)%17===0){ctx.fillStyle="#f7e26b";ctx.fillRect(X+7,Y+7,2,2)}}
+function propertyEvent(){
+ showEvent("第二章　初めての物件",`
+ <p class="question-help">物件価格だけでなく、営業できるか・設備費・客層まで考えて選びます。</p>
+ <div class="card"><strong>A：駅前の家</strong><br>家賃18万／消防費100万／集客力 高<br><span class="choice-note">売上は期待できますが、初期費用が重い物件です。</span></div>
+ <div class="card"><strong>B：住宅街の家</strong><br>家賃8万／消防費20万／生活導線 良<br><span class="choice-note">無理のない費用で、長期運営に向いています。</span></div>
+ <div class="card"><strong>C：格安倉庫</strong><br>家賃3万／住宅性なし／民泊不可<br><span class="choice-note">安くても、住宅でなければ民泊には使えません。</span></div>
+ <button onclick="chooseProperty('A')">Aを選ぶ</button>
+ <button onclick="chooseProperty('B')" class="primary">Bを選ぶ</button>
+ <button onclick="chooseProperty('C')">Cを選ぶ</button>`);
 }
-function drawBuilding(b){
- const X=b.x*T,Y=b.y*T,W=b.w*T,H=b.h*T;
- ctx.fillStyle="#7b4e34";ctx.fillRect(X-2,Y-4,W+4,6);
- ctx.fillStyle=b.color;ctx.fillRect(X,Y,W,H);
- ctx.fillStyle="#313742";ctx.fillRect(X+W/2-5,Y+H-12,10,12);
- ctx.fillStyle="#bfe8ff";ctx.fillRect(X+5,Y+7,9,7);ctx.fillRect(X+W-14,Y+7,9,7);
- ctx.fillStyle="rgba(0,0,0,.68)";ctx.fillRect(X,Y-14,Math.max(46,b.label.length*10),12);
- ctx.fillStyle="#fff";ctx.font="9px monospace";ctx.fillText(b.label,X+3,Y-5);
+window.chooseProperty=function(p){
+ state.property=p;
+ if(p==="C"){
+  state.knowledge++;
+  eventContent.innerHTML=`<h2>この物件では開業できません</h2>
+   <div class="result-box bad">
+    <p class="impact bad">－ 倉庫は住宅ではないため、住宅宿泊事業には使えません</p>
+    <p class="impact good">＋ 契約前に気づいたため、損失を回避しました</p>
+   </div><button class="primary" onclick="propertyEvent()">選び直す</button>`;
+  return;
+ }
+ let body="";
+ if(p==="A"){
+  state.money-=80000;state.trust--;state.village+=3;
+  body=`<p class="impact good">＋ 高い集客力</p>
+        <p class="impact bad">－ 初期費用80,000G</p>
+        <p class="impact bad">－ 資金余力が少なくなり、信頼1低下</p>`;
+ }else{
+  state.money-=40000;state.trust+=2;state.village+=4;
+  body=`<p class="impact good">＋ 初期費用を40,000Gに抑えました</p>
+        <p class="impact good">＋ 生活導線が良く、ゲスト満足度に期待</p>
+        <p class="impact good">＋ 堅実な判断で信頼2上昇</p>`;
+ }
+ nextStep();nextStep();
+ eventContent.innerHTML=`<h2>${p}の物件に決定</h2><div class="result-box">${body}</div>
+ <button class="primary" onclick="closeEvent()">消防相談へ進む</button>`;
+};
+
+function fireEvent(){
+ showEvent("第三章　消防設備",`<p>必要な設備をすべて選んでください。</p>
+ <label class="option"><input type="checkbox" id="f1">火災報知機</label>
+ <label class="option"><input type="checkbox" id="f2">消火器</label>
+ <label class="option"><input type="checkbox" id="f3">避難経路図</label>
+ <label class="option"><input type="checkbox" id="f4">大型シャンデリア</label>
+ <div id="fireError" style="min-height:24px;color:#ff9b9b;margin-top:8px"></div>
+ <button class="primary" onclick="checkFire()">消防検査を受ける</button>`);
 }
-function drawChar(n){
- const X=n.x*T,Y=n.y*T;
- ctx.fillStyle="rgba(0,0,0,.25)";ctx.fillRect(X+3,Y+13,10,2);
- ctx.fillStyle=n.c||"#55e09a";ctx.fillRect(X+4,Y+6,8,8);
- ctx.fillStyle="#f0c6a4";ctx.fillRect(X+5,Y+2,6,5);
- ctx.fillStyle=n.white?"#f4f4f4":"#4b332a";ctx.fillRect(X+4,Y+1,8,3);
- ctx.fillStyle="#111";ctx.fillRect(X+5,Y+4,1,1);ctx.fillRect(X+10,Y+4,1,1);
+window.checkFire=function(){
+ const ok=f1.checked&&f2.checked&&f3.checked&&!f4.checked;
+ if(ok){
+  state.knowledge+=3;state.money-=10000;nextStep();nextStep();
+  eventContent.innerHTML=`<h2>消防検査 合格！</h2>
+   <div class="result-box">
+    <p class="impact good">＋ 安全な宿に一歩近づきました</p>
+    <p class="impact good">＋ 知識が3上がりました</p>
+    <p class="impact bad">－ 設備費として10,000G支払いました</p>
+   </div>
+   <button class="primary" onclick="closeEvent()">次へ進む</button>`;
+ }else{
+  const missing=[];
+  if(!f1.checked)missing.push("火災報知機");
+  if(!f2.checked)missing.push("消火器");
+  if(!f3.checked)missing.push("避難経路図");
+  if(f4.checked)missing.push("大型シャンデリアは消防設備ではありません");
+  document.getElementById("fireError").innerHTML=`<p class="inline-error">見直してください：${missing.join("／")}</p>`;
+ }
+};
+
+function healthEvent(){
+ showEvent("第四章　保健所と届出",`<p class="question-help">民泊に必要なものをすべて選んでください。</p>
+ <label class="check-row"><input type="checkbox" id="h1"> トイレ・お風呂・キッチン・洗面所</label>
+ <label class="check-row"><input type="checkbox" id="h2"> 不在型なら管理業者への依頼が必要</label>
+ <label class="check-row"><input type="checkbox" id="h3"> 非常用照明などの安全措置</label>
+ <label class="check-row"><input type="checkbox" id="h4"> 客室内の噴水</label>
+ <div id="healthError"></div>
+ <button class="primary" onclick="checkHealth()">届出を行う</button>`);
+}
+window.checkHealth=function(){
+ const ok=h1.checked&&h2.checked&&h3.checked&&!h4.checked;
+ const error=document.getElementById("healthError");
+ if(ok){
+  state.knowledge+=3;
+  nextStep();nextStep();
+  eventContent.innerHTML=`<h2>届出完了！</h2>
+   <div class="result-box">
+    <h3>必要な準備が整いました</h3>
+    <p class="impact good">＋ 民泊に必要な設備と管理体制を理解しました</p>
+    <p class="impact good">＋ 知識が3上がりました</p>
+   </div>
+   <button class="primary" onclick="closeEvent()">次へ進む</button>`;
+ }else{
+  const missing=[];
+  if(!h1.checked)missing.push("水回り設備");
+  if(!h2.checked)missing.push("不在型の管理業者への依頼");
+  if(!h3.checked)missing.push("非常用照明などの安全措置");
+  if(h4.checked)missing.push("客室内の噴水は必須ではありません");
+  error.innerHTML=`<p class="inline-error">見直してください：${missing.join("／")}</p>`;
+ }
+};
+
+function openingEvent(){
+ showEvent("第五章　最初のゲスト",`<p class="question-help">宿の特徴を決めてください。選択によって売上・口コミ・村の活気が変わります。</p>
+ <button onclick="openStyle('family')">家族向け・広いリビング<span class="choice-note">安定した評価。家族旅行の予約が増えます。</span></button>
+ <button onclick="openStyle('local')" class="primary">地域体験・地元飲食店案内<span class="choice-note">口コミと村の活気が大きく上がります。</span></button>
+ <button onclick="openStyle('beds')">ベッドを限界まで詰め込む<span class="choice-note">一時的に売上は出ますが、悪い口コミの危険があります。</span></button>`);
+}
+window.openStyle=function(style){
+ let title="",body="",klass="";
+ if(style==="local"){
+  state.review=4.8;state.trust+=3;state.village+=8;state.money+=60000;
+  title="地域全体が宿の魅力になった！";
+  body=`<p class="impact good">＋ ゲストから高評価の口コミ</p>
+        <p class="impact good">＋ 売上 60,000G</p>
+        <p class="impact good">＋ 地元飲食店にも客が流れ、村の活気が8上昇</p>`;
+ }else if(style==="family"){
+  state.review=4.5;state.trust+=2;state.village+=5;state.money+=50000;
+  title="家族旅行の予約が増えた！";
+  body=`<p class="impact good">＋ 安定した口コミ評価</p>
+        <p class="impact good">＋ 売上 50,000G</p>
+        <p class="impact good">＋ 村の活気が5上昇</p>`;
+ }else{
+  state.review=3.2;state.trust-=2;state.village+=1;state.money+=70000;klass="bad";
+  title="定員は増えたが、悪い口コミが続いた";
+  body=`<p class="impact good">＋ 短期売上 70,000G</p>
+        <p class="impact bad">－ 「狭くて落ち着かない」と低評価</p>
+        <p class="impact bad">－ 予約数が減り、今後の売上が大幅減少</p>
+        <p class="impact bad">－ 信頼が2低下</p>`;
+ }
+ nextStep();nextStep();
+ eventContent.innerHTML=`<h2>${title}</h2><div class="result-box ${klass}">${body}</div>
+ <button class="primary" onclick="closeEvent()">次へ進む</button>`;
+};
+
+function troubleEvent(s){
+ const events=[
+  {title:"騒音苦情",q:"深夜2時、近隣から『うるさい』と連絡が来ました。",opts:[
+   ["朝まで待つ",()=>badTrouble()],["すぐゲストへ連絡し、必要なら現地対応",()=>goodTrouble()],["近隣に我慢してもらう",()=>badTrouble()]
+  ]},
+  {title:"鍵が開かない",q:"外国人ゲストから『鍵が開かない』と連絡が来ました。",opts:[
+   ["写真付き案内とビデオ通話で確認",()=>goodTrouble()],["既読だけつける",()=>badTrouble()],["レビュー後に対応",()=>badTrouble()]
+  ]},
+  {title:"清掃スタッフが来ない",q:"チェックイン2時間前、清掃未着手です。",opts:[
+   ["代替スタッフを探し、ゲストにも早めに連絡",()=>goodTrouble(true)],["黙ってチェックインを遅らせる",()=>badTrouble()],["前のゲストのせいにする",()=>badTrouble()]
+  ]}
+ ][s];
+ showEvent(events.title,`<p>${events.q}</p>`+events.opts.map((o,i)=>`<button ${i===1?"class='primary'":""} onclick="troubleChoice(${s},${i})">${o[0]}</button>`).join(""));
+ window._trouble=events;
+}
+window.troubleChoice=function(s,i){window._trouble.opts[i][1]();};
+function goodTrouble(clean=false){
+ state.trust+=2;
+ state.review=Math.min(5,(state.review||4)+0.1);
+ if(clean)state.money-=5000;
+ nextStep();
+ eventContent.innerHTML=`<h2>迅速な対応でトラブルを収束</h2>
+ <div class="result-box">
+  <p class="impact good">＋ ゲストと近隣からの信頼が2上昇</p>
+  <p class="impact good">＋ 口コミ評価が上昇</p>
+  ${clean?'<p class="impact bad">－ 緊急清掃費5,000G</p>':''}
+  <p>早い連絡と状況説明が、宿の営業を守りました。</p>
+ </div><button class="primary" onclick="closeEvent()">次へ進む</button>`;
+}
+function badTrouble(){
+ state.trust-=2;
+ state.review=Math.max(2,(state.review||4)-0.5);
+ state.money=Math.max(0,state.money-20000);
+ nextStep();
+ eventContent.innerHTML=`<h2>対応が遅れ、問題が拡大</h2>
+ <div class="result-box bad">
+  <p class="impact bad">－ ゲストから悪い口コミ。予約と売上が大幅減少</p>
+  <p class="impact bad">－ 近隣住民から行政へ苦情が入り、営業継続が危険に</p>
+  <p class="impact bad">－ 改善しなければ宿の閉鎖につながります</p>
+  <p class="impact bad">－ 損失20,000G／信頼2低下</p>
+ </div><button class="primary" onclick="closeEvent()">改善して次へ進む</button>`;
+}
+
+function limitEvent(){
+ showEvent("第七章　180日の壁",`<p class="question-help">営業日数が上限に近づきました。選択によって費用、売上、村への効果が変わります。</p>
+ <button onclick="chooseLicense('minpaku')">民泊のまま、単価と質を高める<span class="choice-note">追加投資は少ない。営業日数内で高収益を目指します。</span></button>
+ <button onclick="chooseLicense('ryokan')" class="primary">旅館業へ進化する<span class="choice-note">費用は必要ですが、年間営業を目指せます。</span></button>
+ <button onclick="chooseLicense('expand')">別の地域にも一軒増やす<span class="choice-note">複数物件で売上を分散。ただし管理負担が増えます。</span></button>`);
+}
+window.chooseLicense=function(v){
+ let title="",body="",klass="";
+ state.license=v;
+ if(v==="ryokan"){
+  state.money-=30000;state.knowledge+=3;state.village+=10;state.trust+=2;
+  title="旅館業へ進化した！";
+  body=`<p class="impact bad">－ 改修・申請費30,000G</p>
+        <p class="impact good">＋ 年間営業できる体制を獲得</p>
+        <p class="impact good">＋ 雇用が生まれ、村の活気が10上昇</p>`;
+ }else if(v==="minpaku"){
+  state.money+=30000;state.review=Math.min(5,state.review+0.1);state.trust+=1;
+  title="少ない営業日で高品質な宿へ";
+  body=`<p class="impact good">＋ 高単価化で利益30,000G</p>
+        <p class="impact good">＋ 口コミ評価が上昇</p>
+        <p>ただし180日の営業上限は残ります。</p>`;
+ }else{
+  state.money-=20000;state.village+=6;state.trust+=1;
+  title="二軒目の宿を開業した";
+  body=`<p class="impact bad">－ 開業費20,000G</p>
+        <p class="impact good">＋ 売上源が増え、村の活気が6上昇</p>
+        <p class="impact bad">－ 管理負担が増えるため、体制整備が必要</p>`;
+ }
+ nextStep();
+ eventContent.innerHTML=`<h2>${title}</h2><div class="result-box ${klass}">${body}</div>
+ <button class="primary" onclick="closeEvent()">最終章へ</button>`;
+};
+
+function ending(){
+ state.ending=true;
+ eventPanel.scrollTop=0;state.village=Math.max(state.village,45);state.money+=120000;state.review=Math.max(state.review,4.2);
+ showEvent("MINPAKU QUEST - END",`<div class="ending">
+ <h2>ユリイカ村は蘇った</h2>
+ <p>宿の明かりが灯り、旅人が村を歩き、<br>飲食店に笑い声が戻った。</p>
+ <p>空き家は宿になり、仕事が生まれ、<br>子どもたちの声が村に響いた。</p>
+ <p>橋の向こうへ、白髪の旅人が歩いていく。</p>
+ <p><strong>「まだ宿のない町がある。」</strong></p>
+ <hr><p>最終評価：${state.review.toFixed(1)} ★<br>村の活気：${state.village}<br>信頼：${state.trust}<br>知識：${state.knowledge}</p>
+ <button class="primary" onclick="restartGame()">もう一度遊ぶ</button></div>`);
+ saveGame(false);
+}
+window.restartGame=function(){localStorage.removeItem(SAVE_KEY);location.reload();};
+
+function front(){const d={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[state.player.dir];return{x:state.player.x+d[0],y:state.player.y+d[1]};}
+function talk(){if(!state.started||state.ending)return;if(state.dialogOpen){showNextDialog();return;}const f=front(),n=npcs.find(n=>n.x===f.x&&n.y===f.y);if(n)talkTo(n.id);else toast("近くに話せる相手はいません");}
+function solid(x,y){if(x<0||y<0||x>=MAP_W||y>=MAP_H)return true;if(water.has(`${x},${y}`))return true;if(trees.some(t=>t[0]===x&&t[1]===y))return true;if(buildings.some(b=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h))return true;if(npcs.some(n=>n.x===x&&n.y===y))return true;return false;}
+function move(dx,dy,dir){if(!state.started||state.dialogOpen||!eventPanel.classList.contains("hidden"))return;state.player.dir=dir;const nx=state.player.x+dx,ny=state.player.y+dy;if(!solid(nx,ny)){state.player.x=nx;state.player.y=ny;state.walkFrame^=1;}}
+
+function portraitMode(){
+ return matchMedia("(max-width:700px) and (orientation:portrait)").matches;
+}
+function configureCanvas(){
+ const portrait=portraitMode();
+ const targetW=portrait?320:512;
+ if(canvas.width!==targetW||canvas.height!==320){
+  canvas.width=targetW;
+  canvas.height=320;
+  ctx.imageSmoothingEnabled=false;
+ }
+}
+function cameraX(){
+ if(!portraitMode())return 0;
+ const desired=(state.player.x-10)*TILE;
+ return Math.max(0,Math.min(MAP_W*TILE-canvas.width,desired));
 }
 function draw(){
- for(let y=0;y<R;y++)for(let x=0;x<C;x++)drawTile(x,y,map[y][x]);
- Object.values(buildings).forEach(drawBuilding);
- npcs.forEach(n=>{drawChar(n);if(n.id===target()){ctx.fillStyle="#ffd166";ctx.font="bold 16px monospace";ctx.fillText("◇",n.x*T+1,n.y*T-3)}});
- drawChar({x:p.x,y:p.y,c:"#59e5a1"});
+ configureCanvas();
+ updateGuide();
+ const viewW=canvas.width;
+ ctx.clearRect(0,0,viewW,320);
+ if(!ready){
+  ctx.fillStyle="#09131c";ctx.fillRect(0,0,viewW,320);
+  ctx.fillStyle="#d3f6ff";ctx.font="bold 14px sans-serif";ctx.textAlign="center";
+  ctx.fillText("ユリイカ村を読み込み中…",viewW/2,145);
+  ctx.font="11px sans-serif";ctx.fillText(`${assetLoaded} / ${Object.keys(ASSET_DATA).length}`,viewW/2,166);
+  ctx.textAlign="left";requestAnimationFrame(draw);return;
+ }
+ const cam=cameraX();
+ ctx.save();
+ ctx.translate(-cam,0);
+ for(let y=0;y<MAP_H;y++)for(let x=0;x<MAP_W;x++){
+  ctx.drawImage(assets.grass,x*TILE,y*TILE);
+  if(roads.has(`${x},${y}`))ctx.drawImage(assets.road,x*TILE,y*TILE);
+  if(water.has(`${x},${y}`))ctx.drawImage(assets[Math.floor(Date.now()/500)%2?"water1":"water0"],x*TILE,y*TILE);
+ }
+ drawVillageChanges();
+ drawPlaza();
+ flowers.forEach(([x,y])=>ctx.drawImage(assets.flower,x*TILE,y*TILE));
+ benches.forEach(([x,y])=>ctx.drawImage(assets.bench,x*TILE,y*TILE));
+ lamps.forEach(([x,y])=>ctx.drawImage(assets.lamp,x*TILE,y*TILE));
+ trees.forEach(([x,y])=>ctx.drawImage(assets.tree,x*TILE,y*TILE-4));
+ buildings.forEach(b=>{
+  ctx.drawImage(assets[b.kind],b.x*TILE,b.y*TILE);
+ });
+ buildings.forEach(b=>{
+  label(b.name,(b.x+b.w/2)*TILE,b.y*TILE-2);
+ });
+ npcs.forEach(drawNpc);
+ drawPlayer();
+ ctx.restore();
+ drawTopBar();
  requestAnimationFrame(draw);
 }
-
-document.getElementById('startBtn').onclick=()=>{started=true;document.getElementById('start').style.display='none';showDialog("町長",["おお、来てくれたか！ ……いや、まず私に話しかけてくれ。"])}
-document.getElementById('talk').onclick=interact;
-document.getElementById('dialogCard').onclick=e=>{if(e.target.tagName!=="BUTTON")nextLine()}
-document.getElementById('menu').onclick=()=>{document.getElementById('panelText').textContent=`現在の目的：${missions[step]}\n\n黄色い◇が付いている人物へ向かってください。\n\n知識 ${s.knowledge} / 信頼 ${s.trust} / レビュー ★${s.reviews.toFixed(1)}`;document.getElementById('panel').style.display='flex'}
-function closePanel(){document.getElementById('panel').style.display='none'}
-document.getElementById('reset').onclick=()=>location.reload();
-
-const dirs=[["up",0,-1,"up"],["down",0,1,"down"],["left",-1,0,"left"],["right",1,0,"right"]];
-dirs.forEach(([id,dx,dy,d])=>{const el=document.getElementById(id);let t;
- const go=e=>{e.preventDefault();move(dx,dy,d);t=setInterval(()=>move(dx,dy,d),140)}
- const stop=e=>{e.preventDefault();clearInterval(t)}
- el.addEventListener("pointerdown",go);el.addEventListener("pointerup",stop);el.addEventListener("pointerleave",stop)
-});
-window.addEventListener("keydown",e=>{if(e.key==="ArrowUp")move(0,-1,"up");if(e.key==="ArrowDown")move(0,1,"down");if(e.key==="ArrowLeft")move(-1,0,"left");if(e.key==="ArrowRight")move(1,0,"right");if(e.key===" "||e.key==="Enter")interact()});
-
-function startBGM(){
- audio=new (window.AudioContext||window.webkitAudioContext)();
- const master=audio.createGain();master.gain.value=.09;master.connect(audio.destination);
- const notes=[261.63,329.63,392,523.25,392,329.63,293.66,349.23,440,587.33,440,349.23];
- let i=0;
- function tick(){
-  if(!bgmOn)return;
-  const o=audio.createOscillator(),g=audio.createGain();
-  o.type=i%4===0?"triangle":"square";o.frequency.value=notes[i%notes.length];
-  g.gain.setValueAtTime(.0001,audio.currentTime);g.gain.exponentialRampToValueAtTime(.22,audio.currentTime+.02);
-  g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+.28);
-  o.connect(g);g.connect(master);o.start();o.stop(audio.currentTime+.3);i++;
-  setTimeout(tick,320);
+function drawVillageChanges(){ctx.drawImage(assets.house,14*TILE,18*TILE);if(state.chapter>=4){for(const [x,y] of [[3,8],[29,8],[8,16]])ctx.drawImage(assets.guest,x*TILE,y*TILE);}if(state.chapter>=7){for(const [x,y] of [[5,1],[27,1],[2,17],[29,17]])ctx.drawImage(assets.flower,x*TILE,y*TILE);}}
+function drawPlaza(){ctx.fillStyle="#d0c291";ctx.fillRect(13*TILE,7*TILE,7*TILE,8*TILE);ctx.fillStyle="#b5a879";ctx.fillRect(16*TILE-10,10*TILE-10,20,20);ctx.fillStyle="#347ca0";ctx.fillRect(16*TILE-6,10*TILE-5,12,10);ctx.fillStyle="#77d4e7";ctx.fillRect(16*TILE-2,10*TILE-13,4,10);}
+function drawNpc(n){
+ const img=assets[n.asset],sx=(Math.floor(Date.now()/450)%2)*16;
+ ctx.fillStyle="rgba(0,0,0,.22)";
+ ctx.beginPath();ctx.ellipse(n.x*TILE+8,n.y*TILE+15,6,2,0,0,Math.PI*2);ctx.fill();
+ ctx.drawImage(img,sx,0,16,16,n.x*TILE,n.y*TILE,16,16);
+ if(n.id===currentTarget()){
+  const bob=Math.floor(Date.now()/300)%2;
+  const cx=n.x*TILE+8,cy=n.y*TILE-13-bob;
+  ctx.save();
+  ctx.shadowColor="rgba(255,229,111,.9)";ctx.shadowBlur=7;
+  ctx.fillStyle="#ffe56f";ctx.strokeStyle="#5b430d";ctx.lineWidth=1;
+  ctx.beginPath();
+  ctx.moveTo(cx,cy-6);ctx.lineTo(cx+6,cy);ctx.lineTo(cx,cy+6);ctx.lineTo(cx-6,cy);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.restore();
  }
- tick();
 }
-document.getElementById('bgm').onclick=()=>{
- bgmOn=!bgmOn;document.getElementById('bgm').textContent=bgmOn?"BGM ON":"BGM OFF";
- if(bgmOn){if(!audio)startBGM();else if(audio.state==="suspended")audio.resume().then(()=>startBGM());else startBGM()}
+function drawPlayer(){ctx.drawImage(assets.player,state.walkFrame*16,0,16,16,state.player.x*TILE,state.player.y*TILE,16,16);}
+function label(t,x,y){
+ ctx.save();
+ ctx.font="bold 8px sans-serif";
+ const w=ctx.measureText(t).width+12,h=13;
+ const px=Math.round(x-w/2),py=Math.max(19,Math.round(y-h));
+ ctx.fillStyle="rgba(5,15,24,.94)";
+ ctx.strokeStyle="rgba(125,227,255,.78)";
+ ctx.lineWidth=1;
+ ctx.beginPath();
+ if(ctx.roundRect)ctx.roundRect(px,py,w,h,4);else ctx.rect(px,py,w,h);
+ ctx.fill();ctx.stroke();
+ ctx.fillStyle="#fff";
+ ctx.textAlign="center";
+ ctx.textBaseline="middle";
+ ctx.fillText(t,x,py+h/2+.5);
+ ctx.restore();
+}
+function drawTopBar(){
+ const w=canvas.width;
+ ctx.fillStyle="rgba(0,0,0,.74)";
+ ctx.fillRect(0,0,w,18);
+ ctx.fillStyle="#fff";
+ ctx.font="9px monospace";
+ const ch=chapters[Math.min(state.chapter,chapters.length-1)];
+ const mission=ch.steps[Math.min(state.step,ch.steps.length-1)];
+ const shortMission=mission.length>17?mission.slice(0,17)+"…":mission;
+ ctx.fillText(`MISSION: ${shortMission}`,5,12);
+ ctx.textAlign="right";
+ ctx.fillText("ユリイカ村",w-5,12);
+ ctx.textAlign="left";
+}
+
+
+function updateGuide(){
+ const targetId=currentTarget();
+ const target=npcs.find(n=>n.id===targetId);
+ const guide=document.getElementById("nextGuide");
+ if(!guide)return;
+ if(state.ending){guide.textContent="物語は完結しました";return;}
+ guide.textContent=target?`◆ NEXTの印がある「${target.name}」に話しかけよう`:"◆ クエストを確認しよう";
+}
+
+function renderQuest(){
+ const ch=chapters[Math.min(state.chapter,chapters.length-1)];
+ const targetId=currentTarget();
+ const target=npcs.find(n=>n.id===targetId);
+ questTitle.textContent=ch.title+(target?`｜次：${target.name}`:"");questList.innerHTML="";ch.steps.forEach((q,i)=>{const r=document.createElement("div");r.className="quest-row "+(i<state.step?"quest-done":i===state.step?"quest-current":"");r.textContent=(i<state.step?"✓ ":i===state.step?"▶ ":"□ ")+q;questList.appendChild(r);});}
+newGameBtn.onclick=()=>{resetState();titleScreen.classList.add("hidden");setupScreen.classList.remove("hidden");};
+continueBtn.onclick=()=>{if(!loadGame())toast("セーブデータがありません");};
+startBtn.onclick=()=>{
+ state.name=(playerName.value||"リュウ").trim();
+ state.job=job.value;
+ state.started=true;
+ setupScreen.classList.add("hidden");
+ updateStats();
+ toast("右上の「♪ BGM」で音楽を再生できます");
+ talkTo("mayor");
 };
-stats();mission();draw();
+talkBtn.onclick=talk;saveBtn.onclick=()=>saveGame(true);questBtn.onclick=()=>{renderQuest();questPanel.classList.remove("hidden");};closeQuest.onclick=()=>questPanel.classList.add("hidden");dialog.onclick=()=>{if(!state.choiceMode)showNextDialog();};
+document.querySelectorAll("[data-dir]").forEach(b=>{const d=b.dataset.dir,m={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[d];let timer=null;const s=e=>{e.preventDefault();move(m[0],m[1],d);timer=setInterval(()=>move(m[0],m[1],d),140);};const t=e=>{e.preventDefault();if(timer){clearInterval(timer);timer=null;}};b.addEventListener("mousedown",s);b.addEventListener("mouseup",t);b.addEventListener("mouseleave",t);b.addEventListener("touchstart",s,{passive:false});b.addEventListener("touchend",t,{passive:false});});
+addEventListener("keydown",e=>{const m={ArrowUp:[0,-1,"up"],ArrowDown:[0,1,"down"],ArrowLeft:[-1,0,"left"],ArrowRight:[1,0,"right"]}[e.key];if(m){e.preventDefault();move(...m);}if(e.key==="Enter"||e.key===" "){e.preventDefault();talk();}});
+updateStats();
+requestAnimationFrame(draw);
 </script>
 </body>
 </html>
