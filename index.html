@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>MINPAKU QUEST 3.0 STABLE CORE</title>
+<title>MINPAKU QUEST 3.0.1 EMERGENCY INPUT FIX</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--line:#6fd8ff;--accent:#67e1a3;--gold:#f4d86b}
@@ -395,7 +395,7 @@ body{
 }
 
 
-/* ===== MINPAKU QUEST 3.0 STABLE CORE ===== */
+/* ===== MINPAKU QUEST 3.0.1 EMERGENCY INPUT FIX ===== */
 :root{
   --line:#89e8ff;
   --accent:#85efb6;
@@ -547,7 +547,7 @@ h1{
 .audio-test-box audio{width:100%;height:40px;margin-top:7px}
 
 
-/* ===== VERSION 3.0 ===== */
+/* ===== VERSION 3.0.1 ===== */
 .audio-test-box{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .audio-test-box #audioFallbackArea{grid-column:1/-1}
 #audioEnableBtn.enabled{background:linear-gradient(#9df2c3,#61d99a);color:#062015}
@@ -602,7 +602,7 @@ h1{
 }
 
 
-/* ===== VERSION 3.0 iPHONE TITLE FIX ===== */
+/* ===== VERSION 3.0.1 iPHONE TITLE FIX ===== */
 #titleScreen{
   align-items:flex-start !important;
   overflow-y:auto !important;
@@ -657,7 +657,7 @@ h1{
 }
 
 
-/* ===== VERSION 3.0 TITLE SCREEN REBUILD ===== */
+/* ===== VERSION 3.0.1 TITLE SCREEN REBUILD ===== */
 #titleScreen.title-scene{
   position:fixed !important; inset:0 !important; z-index:99999 !important;
   display:flex !important; align-items:flex-start !important; justify-content:center !important;
@@ -762,11 +762,119 @@ body.title-open header,body.title-open main,body.title-open .mobile-tools,body.t
   #titleScreen button{min-height:44px !important;margin:6px 0 !important;font-size:16px !important}
 }
 
+
+/* ===== VERSION 3.0.1 EMERGENCY INPUT FIX ===== */
+body.mq-launch *{
+  pointer-events:none !important;
+}
+body.mq-launch #titleScreen,
+body.mq-launch #titleScreen *{
+  pointer-events:auto !important;
+}
+body.mq-launch #titleScreen{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483646 !important;
+  isolation:isolate !important;
+}
+body.mq-launch #titleScreen::before,
+body.mq-launch #titleScreen::after,
+body.mq-launch #titleScreen *::before,
+body.mq-launch #titleScreen *::after{
+  pointer-events:none !important;
+}
+body.mq-launch #titleScreen button{
+  z-index:2147483647 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  -webkit-tap-highlight-color:rgba(255,255,255,.18) !important;
+}
+
 </style>
 </head>
 <body>
+
+<script>
+(function(){
+  document.documentElement.classList.add("mq-boot");
+
+  function byId(id){ return document.getElementById(id); }
+
+  window.MQ3 = {
+    closeTitle: function(){
+      var title=byId("titleScreen");
+      if(title) title.style.display="none";
+      document.body.classList.remove("mq-launch");
+      document.body.classList.remove("title-open");
+    },
+
+    newGame: function(){
+      try{
+        if(typeof resetState==="function") resetState();
+        this.closeTitle();
+        var setup=byId("setupScreen");
+        if(setup){
+          setup.classList.remove("hidden");
+          setup.style.display="";
+        }
+      }catch(err){
+        console.error(err);
+        alert("開始処理エラー: "+err.message);
+      }
+    },
+
+    continueGame: function(){
+      try{
+        var loaded=(typeof loadGame==="function") ? loadGame() : false;
+        if(loaded){
+          this.closeTitle();
+          if(typeof toast==="function") toast("セーブデータを読み込みました");
+        }else{
+          alert("セーブデータがありません");
+        }
+      }catch(err){
+        console.error(err);
+        alert("読込処理エラー: "+err.message);
+      }
+    },
+
+    enableAudio: function(){
+      var audio=byId("bgmAudio");
+      var btn=byId("v3AudioBtn");
+      if(!audio){ alert("音声プレイヤーが見つかりません"); return; }
+      audio.volume=.8;
+      var p=audio.play();
+      if(p && p.then){
+        p.then(function(){
+          if(btn) btn.textContent="🔊 音楽 ON";
+        }).catch(function(){
+          var box=byId("v3Fallback");
+          if(box) box.classList.remove("hidden");
+          alert("下の標準再生ボタンを一度押してください");
+        });
+      }
+    },
+
+    toggleFallback: function(){
+      var box=byId("v3Fallback");
+      if(box) box.classList.toggle("hidden");
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded",function(){
+    document.body.classList.add("mq-launch");
+
+    // Also attach direct listeners as a second route.
+    var buttons=document.querySelectorAll("#titleScreen button");
+    buttons.forEach(function(btn){
+      btn.style.pointerEvents="auto";
+    });
+  });
+})();
+</script>
+
 <div id="app">
-<header><div><div class="eyebrow">VERSION 3.0</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
+<header><div><div class="eyebrow">VERSION 3.0.1</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
 <div class="mobile-tools"><button id="menuBtn" type="button">メニュー</button><button id="bgmHeaderBtn" type="button">♪ BGM</button><button id="fullscreenBtn" type="button">全画面</button></div>
 <main id="stage">
 <canvas id="game" width="320" height="320"></canvas><div id="nextGuide">◆ 次の相手を案内します</div><div id="directionGuide">目的地</div><div id="saveFlash" class="save-flash">💾 セーブしました</div>
@@ -774,7 +882,7 @@ body.title-open header,body.title-open main,body.title-open .mobile-tools,body.t
 
 <section id="titleScreen" class="v3-title">
   <div class="v3-card">
-    <div class="v3-version">VERSION 3.0</div>
+    <div class="v3-version">VERSION 3.0.1</div>
     <div class="v3-emblem">⚚</div>
     <h1>MINPAKU QUEST</h1>
     <p>一軒の宿が、町の未来を変える。</p>
@@ -792,7 +900,7 @@ body.title-open header,body.title-open main,body.title-open .mobile-tools,body.t
       </div>
     </div>
 
-    <div class="v3-note">ゲーム開始と音楽を完全に分離した安定版</div>
+    <div class="v3-note">3.0.1 入力修正版</div>
   </div>
 </section>
 <section id="setupScreen"<section id="setupScreen" class="overlay hidden"><div class="panel"><h2>主人公を決める</h2><label>名前</label><input id="playerName" maxlength="8" value="リュウ"><label>職業</label><select id="job"><option>サラリーマン</option><option>主婦</option><option>フリーランス</option><option>学生</option></select><button id="startBtn" class="primary">ユリイカ村へ</button></div></section>
@@ -1543,7 +1651,7 @@ requestAnimationFrame(draw);
 })();
 
 
-/* ===== VERSION 3.0 TITLE CONTROLLER ===== */
+/* ===== VERSION 3.0.1 TITLE CONTROLLER ===== */
 (function(){
  const title=document.getElementById("titleScreen");
  const setup=document.getElementById("setupScreen");
@@ -1611,61 +1719,7 @@ requestAnimationFrame(draw);
 })();
 
 
-/* ===== MINPAKU QUEST 3.0 STABLE CONTROLLER ===== */
-window.MQ3 = {
-  closeTitle: function(){
-    var title=document.getElementById("titleScreen");
-    if(title) title.classList.add("hidden");
-    document.body.classList.remove("title-open");
-  },
-  newGame: function(){
-    try{
-      resetState();
-      this.closeTitle();
-      var setup=document.getElementById("setupScreen");
-      if(setup) setup.classList.remove("hidden");
-    }catch(err){
-      console.error(err);
-      alert("ゲーム開始処理でエラーが発生しました。ページを再読み込みしてください。");
-    }
-  },
-  continueGame: function(){
-    try{
-      if(loadGame()){
-        this.closeTitle();
-        if(typeof toast==="function") toast("セーブデータを読み込みました");
-      }else{
-        if(typeof toast==="function") toast("セーブデータがありません");
-        else alert("セーブデータがありません");
-      }
-    }catch(err){
-      console.error(err);
-      alert("セーブデータの読み込みでエラーが発生しました。");
-    }
-  },
-  enableAudio: function(){
-    var audio=document.getElementById("bgmAudio");
-    var btn=document.getElementById("v3AudioBtn");
-    if(!audio) return;
-    audio.volume=0.75;
-    var result=audio.play();
-    if(result && typeof result.then==="function"){
-      result.then(function(){
-        if(btn) btn.textContent="🔊 音楽 ON";
-        if(typeof toast==="function") toast("BGMを再生しました");
-      }).catch(function(){
-        var box=document.getElementById("v3Fallback");
-        if(box) box.classList.remove("hidden");
-        if(typeof toast==="function") toast("下の標準再生ボタンを押してください");
-      });
-    }
-  },
-  toggleFallback: function(){
-    var box=document.getElementById("v3Fallback");
-    if(box) box.classList.toggle("hidden");
-  }
-};
-document.body.classList.add("title-open");
+
 
 </script>
 </body>
