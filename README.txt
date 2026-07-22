@@ -1,4 +1,3 @@
-OPERATION HERMES v1.5
-
-公開方法：このフォルダ内の index.html と README.txt を GitHub の operation-hermes フォルダへコピーしてください。
-ゲームは index.html だけで動作します。画像・音声・CSS・JavaScriptはすべてHTML内に含まれています。
+OPERATION HERMES v1.6
+index.html をGitHubリポジトリ直下へ上書きしてください。
+BGMはブラウザの仕様上、BGM ONボタンを押した後に再生されます。
