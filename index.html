@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>MINPAKU QUEST 2.0.1 iPHONE AUDIO FIX</title>
+<title>MINPAKU QUEST 2.0.2 iPHONE AUDIO START FIX</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--line:#6fd8ff;--accent:#67e1a3;--gold:#f4d86b}
@@ -395,7 +395,7 @@ body{
 }
 
 
-/* ===== MINPAKU QUEST 2.0.1 iPHONE AUDIO FIX ===== */
+/* ===== MINPAKU QUEST 2.0.2 iPHONE AUDIO START FIX ===== */
 :root{
   --line:#89e8ff;
   --accent:#85efb6;
@@ -519,15 +519,35 @@ h1{
   cursor:pointer;
 }
 
+
+#audioUnlockNotice{
+  display:none;
+  position:fixed;
+  left:50%;bottom:max(12px,env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  z-index:5000;
+  width:min(92vw,420px);
+  padding:10px 14px;
+  text-align:center;
+  border:2px solid #ffe27a;
+  border-radius:12px;
+  background:rgba(3,12,20,.97);
+  color:#fff;
+  box-shadow:0 10px 30px rgba(0,0,0,.55);
+  font-size:12px;
+}
+#audioUnlockNotice.show{display:block}
+#silentBtn{font-size:11px;opacity:.8}
+
 </style>
 </head>
 <body>
 <div id="app">
-<header><div><div class="eyebrow">VERSION 2.0.1</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
-<div class="mobile-tools"><button id="menuBtn" type="button">メニュー</button><button id="bgmHeaderBtn" type="button">♪ BGM</button><button id="fullscreenBtn" type="button">全画面</button></div>
+<header><div><div class="eyebrow">VERSION 2.0.2</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
+<div class="mobile-tools"><button id="menuBtn" type="button">メニュー</button><button id="bgmHeaderBtn" type="button" ontouchstart="window.unlockAndToggleAudio(event)" onclick="window.unlockAndToggleAudio(event)">♪ BGM</button><button id="fullscreenBtn" type="button">全画面</button></div>
 <main id="stage">
 <canvas id="game" width="320" height="320"></canvas><div id="nextGuide">◆ 次の相手を案内します</div><div id="directionGuide">目的地</div>
-<section id="titleScreen" class="overlay"><div class="panel title-panel"><div class="title-mark">⚕</div><h2>MINPAKU QUEST</h2><p>一軒の宿が、町の未来を変える。</p><button id="newGameBtn" class="primary">はじめから</button><button id="continueBtn">つづきから</button><div class="note">最初からエンディングまで遊べる完成ストーリー版</div></div></section>
+<section id="titleScreen" class="overlay"><div class="panel title-panel"><div class="title-mark">⚕</div><h2>MINPAKU QUEST</h2><p>一軒の宿が、町の未来を変える。</p><button id="newGameBtn" class="primary">🔊 音を出して はじめから</button><button id="continueBtn">🔊 音を出して つづきから</button><button id="silentBtn">音なしで遊ぶ</button><div class="note">最初からエンディングまで遊べる完成ストーリー版</div></div></section>
 <section id="setupScreen" class="overlay hidden"><div class="panel"><h2>主人公を決める</h2><label>名前</label><input id="playerName" maxlength="8" value="リュウ"><label>職業</label><select id="job"><option>サラリーマン</option><option>主婦</option><option>フリーランス</option><option>学生</option></select><button id="startBtn" class="primary">ユリイカ村へ</button></div></section>
 <section id="dialog" class="dialog hidden"><div id="speaker"></div><div id="dialogText"></div><div id="choices"></div><div class="dialog-hint">TALK / タップで進む</div></section>
 <section id="questPanel" class="side-panel hidden"><h3 id="questTitle"></h3><div id="questList"></div><button id="closeQuest">閉じる</button></section>
@@ -543,7 +563,7 @@ h1{
     <div id="toast" class="toast hidden"></div>
 </main>
 <section id="controls"><div class="dpad"><button data-dir="up">▲</button><button data-dir="left">◀</button><button data-dir="down">▼</button><button data-dir="right">▶</button></div><div class="actions"><button id="talkBtn" class="primary">TALK</button><button id="questBtn">QUEST</button><button id="saveBtn">SAVE</button></div></section>
-</div>
+</div><div id="audioUnlockNotice">iPhoneの音量を上げて、「♪ BGM」をもう一度タップしてください</div>
 <script>
 "use strict";
 const TILE=16,MAP_W=32,MAP_H=20,SAVE_KEY="minpakuQuestV2Alpha",OLD_SAVE_KEY="operationHermesCompleteV1";
@@ -686,65 +706,87 @@ async function toggleBgm(event){
 }
 const floatingBgmBtn=document.getElementById("bgmHeaderBtn");
 const menuBgm=document.getElementById("menuBgm");
-let lastBgmToggleAt=0;
+const audioUnlockNotice=document.getElementById("audioUnlockNotice");
+let audioBusy=false;
+let ignoreNextClickUntil=0;
 
-async function handleBgmPress(event){
+function ensureAudioContextNow(){
+ if(!audioCtx){
+  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContextClass)throw new Error("AudioContext unsupported");
+  audioCtx=new AudioContextClass();
+ }
+ return audioCtx;
+}
+
+function playImmediateUnlockSound(){
+ const ac=ensureAudioContextNow();
+ // Do this synchronously inside touchstart/click. No await before start().
+ const osc=ac.createOscillator();
+ const gain=ac.createGain();
+ osc.type="square";
+ osc.frequency.value=523.25;
+ gain.gain.setValueAtTime(0.08,ac.currentTime);
+ gain.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+0.08);
+ osc.connect(gain);gain.connect(ac.destination);
+ osc.start(ac.currentTime);
+ osc.stop(ac.currentTime+0.09);
+ return ac;
+}
+
+window.unlockAndToggleAudio=function(event){
  if(event){
   event.preventDefault();
   event.stopPropagation();
  }
  const now=Date.now();
- if(now-lastBgmToggleAt<450)return;
- lastBgmToggleAt=now;
-
- // iOS Safari requires AudioContext creation/resume inside the actual touch gesture.
+ if(audioBusy||now<ignoreNextClickUntil)return false;
+ audioBusy=true;
+ ignoreNextClickUntil=now+500;
  try{
-  if(!audioCtx){
-   const AudioContextClass=window.AudioContext||window.webkitAudioContext;
-   if(!AudioContextClass){
-    toast("このブラウザはBGMに対応していません");
-    return;
+  const ac=playImmediateUnlockSound();
+  const finish=()=>{
+   bgmOn=!bgmOn;
+   clearInterval(bgmTimer);bgmTimer=null;
+   if(bgmOn){
+    bgmStep=0;
+    bgmTick();
+    bgmTimer=setInterval(bgmTick,250);
+    toast("BGMを再生しました");
+   }else{
+    toast("BGMを停止しました");
    }
-   audioCtx=new AudioContextClass();
+   updateBgmUi();
+   if(audioUnlockNotice)audioUnlockNotice.classList.remove("show");
+   audioBusy=false;
+  };
+  if(ac.state==="running"){
+   finish();
+  }else{
+   ac.resume().then(()=>{
+    // Resume may complete after the gesture, so play another audible confirmation.
+    playImmediateUnlockSound();
+    finish();
+   }).catch(err=>{
+    console.error(err);
+    audioBusy=false;
+    if(audioUnlockNotice)audioUnlockNotice.classList.add("show");
+    toast("もう一度「♪ BGM」を押してください");
+   });
   }
-  if(audioCtx.state!=="running"){
-   await audioCtx.resume();
-  }
-
-  // A very short silent unlock tone helps older iPhone Safari versions.
-  const unlockOsc=audioCtx.createOscillator();
-  const unlockGain=audioCtx.createGain();
-  unlockGain.gain.value=0.00001;
-  unlockOsc.connect(unlockGain);
-  unlockGain.connect(audioCtx.destination);
-  unlockOsc.start();
-  unlockOsc.stop(audioCtx.currentTime+0.02);
-
-  await toggleBgm();
  }catch(err){
-  console.error("iPhone audio unlock failed",err);
-  toast("消音モードを解除して、もう一度押してください");
+  console.error(err);
+  audioBusy=false;
+  if(audioUnlockNotice)audioUnlockNotice.classList.add("show");
+  toast("このブラウザでは音を開始できません");
  }
-}
+ return false;
+};
 
-function bindBgmButton(button){
- if(!button)return;
- button.addEventListener("touchend",handleBgmPress,{passive:false});
- button.addEventListener("pointerup",e=>{
-  if(e.pointerType==="touch")return;
-  handleBgmPress(e);
- });
- button.addEventListener("click",e=>{
-  // Fallback for browsers without Pointer Events. Ignore synthetic iOS click.
-  if(Date.now()-lastBgmToggleAt<450){
-   e.preventDefault();
-   return;
-  }
-  handleBgmPress(e);
- });
+if(menuBgm){
+ menuBgm.ontouchstart=window.unlockAndToggleAudio;
+ menuBgm.onclick=window.unlockAndToggleAudio;
 }
-bindBgmButton(floatingBgmBtn);
-bindBgmButton(menuBgm);
 updateBgmUi();
 
 const mobileMenu=document.getElementById("mobileMenu");
@@ -795,7 +837,6 @@ document.addEventListener("contextmenu",e=>{
 });
 let lastTouchEnd=0;
 document.addEventListener("touchend",e=>{
- if(e.target.closest("#bgmHeaderBtn,#menuBgm"))return;
  const now=Date.now();
  if(now-lastTouchEnd<=300)e.preventDefault();
  lastTouchEnd=now;
@@ -1276,6 +1317,8 @@ function renderQuest(){
  questTitle.textContent=ch.title+(target?`｜次：${target.name}`:"");questList.innerHTML="";ch.steps.forEach((q,i)=>{const r=document.createElement("div");r.className="quest-row "+(i<state.step?"quest-done":i===state.step?"quest-current":"");r.textContent=(i<state.step?"✓ ":i===state.step?"▶ ":"□ ")+q;questList.appendChild(r);});}
 newGameBtn.onclick=()=>{resetState();titleScreen.classList.add("hidden");setupScreen.classList.remove("hidden");};
 continueBtn.onclick=()=>{if(!loadGame())toast("セーブデータがありません");};
+const silentBtn=document.getElementById("silentBtn");
+if(silentBtn)silentBtn.onclick=()=>{titleScreen.classList.add("hidden");setupScreen.classList.remove("hidden");toast("音なしで開始します");};
 startBtn.onclick=()=>{
  state.name=(playerName.value||"リュウ").trim();
  state.job=job.value;
