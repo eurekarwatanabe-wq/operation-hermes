@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>MINPAKU QUEST 3.0.1 EMERGENCY INPUT FIX</title>
+<title>MINPAKU QUEST 3.0.2 CORE REPAIR</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--line:#6fd8ff;--accent:#67e1a3;--gold:#f4d86b}
@@ -395,7 +395,7 @@ body{
 }
 
 
-/* ===== MINPAKU QUEST 3.0.1 EMERGENCY INPUT FIX ===== */
+/* ===== MINPAKU QUEST 3.0.2 CORE REPAIR ===== */
 :root{
   --line:#89e8ff;
   --accent:#85efb6;
@@ -547,7 +547,7 @@ h1{
 .audio-test-box audio{width:100%;height:40px;margin-top:7px}
 
 
-/* ===== VERSION 3.0.1 ===== */
+/* ===== VERSION 3.0.2 ===== */
 .audio-test-box{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .audio-test-box #audioFallbackArea{grid-column:1/-1}
 #audioEnableBtn.enabled{background:linear-gradient(#9df2c3,#61d99a);color:#062015}
@@ -602,7 +602,7 @@ h1{
 }
 
 
-/* ===== VERSION 3.0.1 iPHONE TITLE FIX ===== */
+/* ===== VERSION 3.0.2 iPHONE TITLE FIX ===== */
 #titleScreen{
   align-items:flex-start !important;
   overflow-y:auto !important;
@@ -657,7 +657,7 @@ h1{
 }
 
 
-/* ===== VERSION 3.0.1 TITLE SCREEN REBUILD ===== */
+/* ===== VERSION 3.0.2 TITLE SCREEN REBUILD ===== */
 #titleScreen.title-scene{
   position:fixed !important; inset:0 !important; z-index:99999 !important;
   display:flex !important; align-items:flex-start !important; justify-content:center !important;
@@ -763,7 +763,7 @@ body.title-open header,body.title-open main,body.title-open .mobile-tools,body.t
 }
 
 
-/* ===== VERSION 3.0.1 EMERGENCY INPUT FIX ===== */
+/* ===== VERSION 3.0.2 EMERGENCY INPUT FIX ===== */
 body.mq-launch *{
   pointer-events:none !important;
 }
@@ -815,7 +815,8 @@ body.mq-launch #titleScreen button{
         var setup=byId("setupScreen");
         if(setup){
           setup.classList.remove("hidden");
-          setup.style.display="";
+          setup.style.removeProperty("display");
+          setup.style.pointerEvents="auto";
         }
       }catch(err){
         console.error(err);
@@ -842,11 +843,20 @@ body.mq-launch #titleScreen button{
       var audio=byId("bgmAudio");
       var btn=byId("v3AudioBtn");
       if(!audio){ alert("音声プレイヤーが見つかりません"); return; }
+
+      if(!audio.paused){
+        audio.pause();
+        if(btn) btn.textContent="🎵 音楽を有効にする";
+        if(typeof updateBgmUi==="function") updateBgmUi();
+        return;
+      }
+
       audio.volume=.8;
       var p=audio.play();
       if(p && p.then){
         p.then(function(){
-          if(btn) btn.textContent="🔊 音楽 ON";
+          if(btn) btn.textContent="🔊 音楽 ON（押すと停止）";
+          if(typeof updateBgmUi==="function") updateBgmUi();
         }).catch(function(){
           var box=byId("v3Fallback");
           if(box) box.classList.remove("hidden");
@@ -871,10 +881,24 @@ body.mq-launch #titleScreen button{
     });
   });
 })();
+
+document.addEventListener("DOMContentLoaded",function(){
+  var audio=document.getElementById("bgmAudio");
+  var titleBtn=document.getElementById("v3AudioBtn");
+  if(audio && titleBtn){
+    function syncTitleAudio(){
+      titleBtn.textContent=audio.paused ? "🎵 音楽を有効にする" : "🔊 音楽 ON（押すと停止）";
+    }
+    audio.addEventListener("play",syncTitleAudio);
+    audio.addEventListener("pause",syncTitleAudio);
+    syncTitleAudio();
+  }
+});
+
 </script>
 
 <div id="app">
-<header><div><div class="eyebrow">VERSION 3.0.1</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
+<header><div><div class="eyebrow">VERSION 3.0.2</div><h1>MINPAKU QUEST</h1><div class="tagline">― 一軒の宿が、町の未来を変える。―</div></div><div id="stats"></div></header>
 <div class="mobile-tools"><button id="menuBtn" type="button">メニュー</button><button id="bgmHeaderBtn" type="button">♪ BGM</button><button id="fullscreenBtn" type="button">全画面</button></div>
 <main id="stage">
 <canvas id="game" width="320" height="320"></canvas><div id="nextGuide">◆ 次の相手を案内します</div><div id="directionGuide">目的地</div><div id="saveFlash" class="save-flash">💾 セーブしました</div>
@@ -882,7 +906,7 @@ body.mq-launch #titleScreen button{
 
 <section id="titleScreen" class="v3-title">
   <div class="v3-card">
-    <div class="v3-version">VERSION 3.0.1</div>
+    <div class="v3-version">VERSION 3.0.2</div>
     <div class="v3-emblem">⚚</div>
     <h1>MINPAKU QUEST</h1>
     <p>一軒の宿が、町の未来を変える。</p>
@@ -900,10 +924,10 @@ body.mq-launch #titleScreen button{
       </div>
     </div>
 
-    <div class="v3-note">3.0.1 入力修正版</div>
+    <div class="v3-note">3.0.2 コア修正版</div>
   </div>
 </section>
-<section id="setupScreen"<section id="setupScreen" class="overlay hidden"><div class="panel"><h2>主人公を決める</h2><label>名前</label><input id="playerName" maxlength="8" value="リュウ"><label>職業</label><select id="job"><option>サラリーマン</option><option>主婦</option><option>フリーランス</option><option>学生</option></select><button id="startBtn" class="primary">ユリイカ村へ</button></div></section>
+<section id="setupScreen" class="overlay hidden"><div class="panel"><h2>主人公を決める</h2><label>名前</label><input id="playerName" maxlength="8" value="リュウ"><label>職業</label><select id="job"><option>サラリーマン</option><option>主婦</option><option>フリーランス</option><option>学生</option></select><button id="startBtn" class="primary">ユリイカ村へ</button></div></section>
 <section id="dialog" class="dialog hidden"><div id="speaker"></div><div id="dialogText"></div><div id="choices"></div><div class="dialog-hint">TALK / タップで進む</div></section>
 <section id="questPanel" class="side-panel hidden"><h3 id="questTitle"></h3><div id="questList"></div><button id="closeQuest">閉じる</button></section>
 <section id="eventPanel" class="overlay hidden"><div class="panel" id="eventContent"></div></section>
@@ -969,8 +993,23 @@ function updateStats(){stats.innerHTML=`${state.name}／${state.job}<br>${state.
 function toast(t){toastBox.textContent=t;toastBox.classList.remove("hidden");clearTimeout(toast.timer);toast.timer=setTimeout(()=>toastBox.classList.add("hidden"),1800);}
 const toastBox=document.getElementById("toast");
 function saveGame(show=true){localStorage.setItem(SAVE_KEY,JSON.stringify({...state,dialogOpen:false,dialogQueue:[],choiceMode:false}));if(show)toast("セーブしました");}
-function loadGame(){const raw=localStorage.getItem(SAVE_KEY)||localStorage.getItem(OLD_SAVE_KEY);if(!raw)return false;try{Object.assign(state,JSON.parse(raw));state.started=true;titleScreen.classList.add("hidden");setupScreen.classList.add("hidden");
-
+function loadGame(){
+ const raw=localStorage.getItem(SAVE_KEY)||localStorage.getItem(OLD_SAVE_KEY);
+ if(!raw)return false;
+ try{
+  const data=JSON.parse(raw);
+  Object.assign(state,{day:1,operationHistory:[],cleanliness:70,neighbors:70,bookings:0},data);
+  state.started=true;
+  titleScreen.classList.add("hidden");
+  setupScreen.classList.add("hidden");
+  updateStats();
+  renderQuest();
+  return true;
+ }catch(e){
+  console.error("loadGame failed",e);
+  return false;
+ }
+}
 
 // Real audio file BGM: reliable on iPhone Safari
 let bgmOn=false;
@@ -1088,8 +1127,6 @@ document.addEventListener("touchend",e=>{
  if(now-lastTouchEnd<=300)e.preventDefault();
  lastTouchEnd=now;
 },{passive:false});
-
-updateStats();return true;}catch(e){return false;}}
 
 function setPortrait(speaker,text=""){
  const p=document.getElementById("portrait"),face=document.getElementById("portraitFace");
@@ -1615,10 +1652,6 @@ function renderQuest(){
  const targetId=currentTarget();
  const target=npcs.find(n=>n.id===targetId);
  questTitle.textContent=ch.title+(target?`｜次：${target.name}`:"");questList.innerHTML="";ch.steps.forEach((q,i)=>{const r=document.createElement("div");r.className="quest-row "+(i<state.step?"quest-done":i===state.step?"quest-current":"");r.textContent=(i<state.step?"✓ ":i===state.step?"▶ ":"□ ")+q;questList.appendChild(r);});}
-newGameBtn.onclick=async()=>{await startRealAudio();resetState();titleScreen.classList.add("hidden");setupScreen.classList.remove("hidden");};
-continueBtn.onclick=()=>{if(!loadGame())toast("セーブデータがありません");};
-const silentBtn=document.getElementById("silentBtn");
-if(silentBtn)silentBtn.onclick=()=>{titleScreen.classList.add("hidden");setupScreen.classList.remove("hidden");toast("音なしで開始します");};
 startBtn.onclick=()=>{
  state.name=(playerName.value||"リュウ").trim();
  state.job=job.value;
@@ -1634,24 +1667,7 @@ addEventListener("keydown",e=>{const m={ArrowUp:[0,-1,"up"],ArrowDown:[0,1,"down
 updateStats();
 requestAnimationFrame(draw);
 
-(function(){
- const btn=document.getElementById("newGameBtn");
- if(!btn)return;
- let touched=false;
- btn.addEventListener("touchend",async function(e){
-  e.preventDefault();
-  if(touched)return;
-  touched=true;
-  setTimeout(()=>touched=false,600);
-  await startRealAudio();
-  resetState();
-  titleScreen.classList.add("hidden");
-  setupScreen.classList.remove("hidden");
- },{passive:false});
-})();
-
-
-/* ===== VERSION 3.0.1 TITLE CONTROLLER ===== */
+/* ===== VERSION 3.0.2 TITLE CONTROLLER ===== */
 (function(){
  const title=document.getElementById("titleScreen");
  const setup=document.getElementById("setupScreen");
